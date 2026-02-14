@@ -34,7 +34,7 @@ const age = calculateAge('2003-09-09')
             <div class="flex-1 order-1 md:order-2 w-full max-w-sm mx-auto">
                 <div class="aspect-square rounded-2xl bg-gray-200 dark:bg-gray-800 flex items-center justify-center overflow-hidden shadow-xl border border-gray-200 dark:border-gray-700">
                     <!-- Replace this with your actual <img> tag when ready -->
-                    <span class="text-gray-400 italic">Your Picture Here</span>
+                    <span class="text-gray-400 italic">{{ t('picturehereText') }}</span>
                 </div>
             </div>
         </div>

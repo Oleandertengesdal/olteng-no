@@ -22,6 +22,8 @@
     "whatTheSiteIsForText": "Hovedformålet med denne nettsiden er å fungere som et portfolio for mine prosjekter og gi folk en måte å komme i kontakt med meg. Jeg ønsket også å lage en plattform hvor jeg kan dele mine tanker og ideer om programmering og teknologi, og hvor jeg kan koble meg sammen med andre som har lignende interesser.",
     "projectsText": "Her er noen av mine prosjekter. Klikk på hvert prosjekt for å lære mer om det.",
     "contactText": "Hvis du vil komme i kontakt med meg, kan du sende meg en e-post på {} eller finne meg på sosiale medier ved å klikke på ikonene nedenfor.",
+    "pictures": "Bilder",
+    "picturehereText": "Bilde her",
     "actions": {
         "save": "Lagre",
         "cancel": "Avbryt",
