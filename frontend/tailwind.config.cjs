@@ -6,7 +6,18 @@ module.exports = {
     "./src/**/*.{vue,js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        primary: {
+          DEFAULT: '#2563eb',
+          hover: '#1d4ed8',
+        },
+        danger: '#dc2626',
+      },
+      borderRadius: {
+        'custom': '8px',
+      }
+    },
   },
   plugins: [],
 }

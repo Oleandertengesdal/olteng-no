@@ -23,6 +23,11 @@ const router = createRouter({
       path: '/contact',
       name: 'contact',
       component: () => import('../views/mainsite.vue') // Placeholder
+    },
+    {
+      path: '/project/:id',
+      name: 'project-details',
+      component: () => import('../views/mainsite.vue') // Placeholder
     }
   ],
 })
