@@ -126,19 +126,19 @@ const openLive = () => {
         </div>
 
         <!-- Overview Section -->
-        <div v-if="project.title.overview || project.description.overview" class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 border border-gray-200 dark:border-gray-700">
+        <div v-if="project.showcase?.overview" class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 border border-gray-200 dark:border-gray-700">
           <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">{{ t('projectOverview') }}</h2>
           <p class="text-gray-700 dark:text-gray-300 leading-relaxed">
-            {{ locale === 'nb' ? project.description.overview : project.title.overview }}
+            {{ getLocalizedText(project.showcase.overview) }}
           </p>
         </div>
 
         <!-- Features Section -->
-        <div v-if="project.title.features || project.description.features" class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 border border-gray-200 dark:border-gray-700">
+        <div v-if="project.showcase?.features" class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 border border-gray-200 dark:border-gray-700">
           <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">{{ t('keyFeatures') }}</h2>
           <ul class="space-y-3">
             <li
-              v-for="(feature, index) in (locale === 'nb' ? project.description.features : project.title.features)"
+              v-for="(feature, index) in project.showcase.features[locale as 'en' | 'nb']"
               :key="index"
               class="flex items-start gap-3"
             >
@@ -151,19 +151,19 @@ const openLive = () => {
         </div>
 
         <!-- Technical Details Section -->
-        <div v-if="project.title.technicalDetails || project.description.technicalDetails" class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 border border-gray-200 dark:border-gray-700">
+        <div v-if="project.showcase?.technicalDetails" class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 border border-gray-200 dark:border-gray-700">
           <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">{{ t('technicalDetails') }}</h2>
           <p class="text-gray-700 dark:text-gray-300 leading-relaxed">
-            {{ locale === 'nb' ? project.description.technicalDetails : project.title.technicalDetails }}
+            {{ getLocalizedText(project.showcase.technicalDetails) }}
           </p>
         </div>
 
         <!-- Challenges Section -->
-        <div v-if="project.title.challenges || project.description.challenges" class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 border border-gray-200 dark:border-gray-700">
+        <div v-if="project.showcase?.challenges" class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 border border-gray-200 dark:border-gray-700">
           <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">{{ t('challenges') }}</h2>
           <ul class="space-y-3">
             <li
-              v-for="(challenge, index) in (locale === 'nb' ? project.description.challenges : project.title.challenges)"
+              v-for="(challenge, index) in project.showcase.challenges[locale as 'en' | 'nb']"
               :key="index"
               class="flex items-start gap-3"
             >
@@ -176,11 +176,11 @@ const openLive = () => {
         </div>
 
         <!-- Outcomes Section -->
-        <div v-if="project.title.outcomes || project.description.outcomes" class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 border border-gray-200 dark:border-gray-700">
+        <div v-if="project.showcase?.outcomes" class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 border border-gray-200 dark:border-gray-700">
           <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">{{ t('outcomes') }}</h2>
           <ul class="space-y-3">
             <li
-              v-for="(outcome, index) in (locale === 'nb' ? project.description.outcomes : project.title.outcomes)"
+              v-for="(outcome, index) in project.showcase.outcomes[locale as 'en' | 'nb']"
               :key="index"
               class="flex items-start gap-3"
             >
@@ -193,11 +193,11 @@ const openLive = () => {
         </div>
 
         <!-- Future Improvements Section -->
-        <div v-if="project.title.futureImprovements || project.description.futureImprovements" class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 border border-gray-200 dark:border-gray-700">
+        <div v-if="project.showcase?.futureImprovements" class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 border border-gray-200 dark:border-gray-700">
           <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">{{ t('futureImprovements') }}</h2>
           <ul class="space-y-3">
             <li
-              v-for="(improvement, index) in (locale === 'nb' ? project.description.futureImprovements : project.title.futureImprovements)"
+              v-for="(improvement, index) in project.showcase.futureImprovements[locale as 'en' | 'nb']"
               :key="index"
               class="flex items-start gap-3"
             >
