@@ -25,9 +25,14 @@ const router = createRouter({
       component: () => import('../views/mainsite.vue') // Placeholder
     },
     {
-      path: '/project/:id',
+      path: '/projects/json2csv',
+      name: 'project-json2csv',
+      component: () => import('../views/projects/ProjectJson2CSV.vue')
+    },
+    {
+      path: '/projects/:id',
       name: 'project-details',
-      component: () => import('../views/mainsite.vue') // Placeholder
+      component: () => import('../views/projects/ProjectShowcase.vue')
     }
   ],
 })

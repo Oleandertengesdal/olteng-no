@@ -88,5 +88,25 @@
         "minutesAgo": "{{count}} minutes ago",
         "hoursAgo": "{{count}} hours ago",
         "daysAgo": "{{count}} days ago"
-    }
+    },
+    "projectsPageDescription": "Explore my projects, from large applications to simple tools and utilities.",
+    "featuredProjects": "Featured Projects",
+    "toolsAndUtilities": "Tools & Utilities",
+    "tryItLive": "Try it live",
+    "live": "Live",
+    "noProjectsYet": "No projects yet. Check back soon!",
+    "projectOverview": "Overview",
+    "keyFeatures": "Key Features",
+    "technicalDetails": "Technical Details",
+    "challenges": "Challenges & Solutions",
+    "outcomes": "Outcomes & Results",
+    "futureImprovements": "Future Improvements",
+    "technologies": "Technologies",
+    "projectYear": "Year",
+    "projectDuration": "Duration",
+    "projectRole": "Role",
+    "projectStatus": "Status",
+    "viewOnGithub": "View on GitHub",
+    "liveDemo": "Live Demo",
+    "backToProjects": "Back to Projects"
 }

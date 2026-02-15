@@ -39,10 +39,10 @@ const toggleDarkMode = () => {
             {{ t('navigations.home') }}
           </RouterLink>
           <RouterLink 
-            to="/about" 
+            to="/projects" 
             class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 rounded-md font-medium"
           >
-            {{ t('navigations.about') }}
+            {{ t('navigations.projects') }}
           </RouterLink>
         </nav>
 

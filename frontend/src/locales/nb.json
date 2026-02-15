@@ -88,5 +88,25 @@
         "minutesAgo": "for {{count}} minutter siden",
         "hoursAgo": "for {{count}} timer siden",
         "daysAgo": "for {{count}} dager siden"
-    }
+    },
+    "projectsPageDescription": "Utforsk prosjektene mine, fra store applikasjoner til enkle verktøy og hjelpemidler.",
+    "featuredProjects": "Fremhevede prosjekter",
+    "toolsAndUtilities": "Verktøy & hjelpemidler",
+    "tryItLive": "Prøv det live",
+    "live": "Live",
+    "noProjectsYet": "Ingen prosjekter ennå. Sjekk tilbake snart!",
+    "projectOverview": "Oversikt",
+    "keyFeatures": "Nøkkelfunksjoner",
+    "technicalDetails": "Tekniske detaljer",
+    "challenges": "Utfordringer & løsninger",
+    "outcomes": "Resultater",
+    "futureImprovements": "Fremtidige forbedringer",
+    "technologies": "Teknologier",
+    "projectYear": "År",
+    "projectDuration": "Varighet",
+    "projectRole": "Rolle",
+    "projectStatus": "Status",
+    "viewOnGithub": "Se på GitHub",
+    "liveDemo": "Live demo",
+    "backToProjects": "Tilbake til prosjekter"
 }
