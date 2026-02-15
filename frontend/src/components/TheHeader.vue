@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
 import { RouterLink } from 'vue-router'
+import logo from '../assets/logo.svg'
 
 const { t, locale } = useI18n()
 
@@ -25,8 +26,11 @@ const toggleDarkMode = () => {
       <div class="flex justify-between items-center h-16">
         <!-- Logo -->
         <div class="flex-shrink-0 flex items-center">
-          <RouterLink to="/" class="text-2xl font-bold text-blue-600 dark:text-blue-400">
-            Oleander Tengesdal
+          <RouterLink to="/" class="flex items-center gap-3 group">
+            <img :src="logo" alt="OT Logo" class="h-10 w-10 transition-transform group-hover:scale-110" />
+            <span class="text-2xl font-bold text-blue-600 dark:text-blue-400">
+              Oleander Tengesdal
+            </span>
           </RouterLink>
         </div>
 
