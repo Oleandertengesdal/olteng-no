@@ -84,6 +84,27 @@ const routes: RouteRecordRaw[] = [
     },
   },
   {
+    path: '/projects/karakter',
+    name: 'project-karakter',
+    alias: '/projects/grades',
+    component: () => import('../views/projects/ProjectGrades.vue'),
+    meta: {
+      title: 'Karaktersnitt — Oleander Tengesdal',
+      description:
+        'Regn ut vektet karaktersnitt etter studiepoeng, og se hva du må ha på gjenstående emner for å nå et mål.',
+    },
+  },
+  {
+    path: '/projects/promille',
+    name: 'project-promille',
+    component: () => import('../views/projects/ProjectBac.vue'),
+    meta: {
+      title: 'Promillekalkulator — Oleander Tengesdal',
+      description:
+        'Anslag på promille over tid etter Widmark, med usikkerhetsspenn og estimat på når alkoholen er ute av kroppen.',
+    },
+  },
+  {
     path: '/projects/:id',
     name: 'project-details',
     component: () => import('../views/projects/ProjectShowcase.vue'),

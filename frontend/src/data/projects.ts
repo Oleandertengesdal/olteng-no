@@ -220,6 +220,84 @@ export const projects: Project[] = [
   },
 
   {
+    id: 'karakter',
+    title: {
+      en: 'Grade average calculator',
+      nb: 'Karaktersnitt',
+    },
+    description: {
+      en: 'Weighted grade average by credits, with a spread, a target calculator, and a paste importer that handles whatever Studentweb or a spreadsheet throws at it. The weighting is the point — a plain mean of the letters is the common mistake.',
+      nb: 'Vektet karaktersnitt etter studiepoeng, med fordeling, målkalkulator og en lim-inn-import som tåler det Studentweb eller et regneark kaster på den. Vektingen er hele poenget — et rent gjennomsnitt av bokstavene er den vanlige feilen.',
+    },
+    type: 'live',
+    size: 'small',
+    technologies: ['TypeScript', 'Vue 3'],
+    githubUrl: 'https://github.com/Oleandertengesdal/olteng-no',
+    component: 'ProjectGrades',
+    featured: false,
+    hue: 'pine',
+    details: { year: '2026', role: 'Solo', status: 'Live' },
+    showcase: {
+      technicalDetails: {
+        en: 'NTNU has no documented public API for courses, so rather than depend on an undocumented internal endpoint that could disappear without warning, the import parses whatever you paste. Fields are identified by shape rather than position: a course code is letters followed by digits, credits are a small decimal number, and a grade is a single letter or the word "bestått". That means column order does not matter and the same parser handles tabs from a spreadsheet, semicolons from a CSV export and plain typed text.',
+        nb: 'NTNU har ikke noe dokumentert offentlig API for emner, så i stedet for å bygge på en udokumentert intern URL som kan forsvinne uten varsel, tolker importen det du limer inn. Feltene kjennes igjen på formen framfor plasseringen: en emnekode er bokstaver etterfulgt av tall, studiepoeng er et lite desimaltall, og karakteren er én bokstav eller ordet «bestått». Dermed spiller kolonnerekkefølgen ingen rolle, og samme parser takler tabulator fra et regneark, semikolon fra en CSV-eksport og ren håndskrevet tekst.',
+      },
+      challenges: {
+        en: [
+          'Weighting by credits is the whole point: a 15-credit course counts twice as much as a 7.5-credit one, and a plain mean quietly works against you when the heavy courses went well',
+          'Pass/fail courses must stay out of the average while their credits still count, which is how institutions calculate it',
+          'The parser has to tell 7,5 credits from a 2024 term code — both are numbers on the same line, so credits are capped at 60',
+          'Converting an average back to a letter has no official table, so the page says so rather than pretending otherwise',
+        ],
+        nb: [
+          'Vekting etter studiepoeng er hele poenget: et emne på 15 sp teller dobbelt så mye som ett på 7,5, og et rent gjennomsnitt jobber stille imot deg når de tunge emnene gikk bra',
+          'Bestått/ikke bestått må holdes utenfor snittet mens studiepoengene fortsatt teller, slik lærestedene selv regner',
+          'Parseren må skille 7,5 studiepoeng fra en terminkode som 2024 — begge er tall på samme linje, så studiepoeng har et tak på 60',
+          'Omregning fra snitt tilbake til bokstav har ingen offisiell tabell, så siden sier det i stedet for å late som noe annet',
+        ],
+      },
+    },
+  },
+  {
+    id: 'promille',
+    title: {
+      en: 'Blood alcohol estimator',
+      nb: 'Promillekalkulator',
+    },
+    description: {
+      en: 'Widmark with an absorption ramp and an honest uncertainty band, answering one question only: when is the alcohol likely to be gone. Deliberately has no "can I drive" button and no way to calculate how much more you could have.',
+      nb: 'Widmark med opptaksrampe og et ærlig usikkerhetsspenn, som svarer på ett spørsmål: når er alkoholen sannsynligvis ute av kroppen. Har bevisst ingen «kan jeg kjøre»-knapp og ingen måte å regne ut hvor mye mer man tåler.',
+    },
+    type: 'live',
+    size: 'small',
+    technologies: ['TypeScript', 'Vue 3', 'SVG'],
+    githubUrl: 'https://github.com/Oleandertengesdal/olteng-no',
+    component: 'ProjectBac',
+    featured: false,
+    hue: 'iris',
+    details: { year: '2026', role: 'Solo', status: 'Live' },
+    showcase: {
+      technicalDetails: {
+        en: 'Widmark divides grams of alcohol by body weight times a distribution factor, then subtracts a linear elimination rate. Textbook Widmark assumes instant absorption, which overstates the first quarter of an hour badly, so each unit is absorbed evenly over 30 minutes instead. Since elimination genuinely varies from 0.10 to 0.20 per mille per hour between people, the result is shown as a band rather than a single figure — a number with two decimals would claim a precision that does not exist.',
+        nb: 'Widmark deler gram alkohol på kroppsvekt ganger en fordelingsfaktor, og trekker så fra en lineær forbrenning. Lærebok-Widmark antar momentant opptak, noe som overdriver det første kvarteret kraftig, så hver enhet tas i stedet opp jevnt over 30 minutter. Siden forbrenningen faktisk varierer fra 0,10 til 0,20 promille i timen mellom personer, vises resultatet som et spenn framfor ett tall — to desimaler ville påstått en presisjon som ikke finnes.',
+      },
+      challenges: {
+        en: [
+          'The ethical design decision came first: no "can I drive" answer and no "how much more" feature, because that is exactly the use that makes these calculators dangerous',
+          'A drink consumed this second reads as zero because it has not been absorbed — a naive "first moment below the limit" check therefore told someone who had just downed five beers that they were sober',
+          'Fixing it meant looking for the last time the curve is above the threshold rather than the first time it is below',
+          'The distribution factor is labelled as body water rather than sex, because that is what it actually measures',
+        ],
+        nb: [
+          'Den etiske designbeslutningen kom først: ingen «kan jeg kjøre»-svar og ingen «hvor mye mer»-funksjon, fordi det er nøyaktig den bruken som gjør slike kalkulatorer farlige',
+          'En enhet drukket akkurat nå måler null fordi den ikke er absorbert ennå — en naiv «første gang under grensa»-sjekk fortalte derfor noen som nettopp hadde tømt fem halvlitere at de var edru',
+          'Rettingen besto i å lete etter siste gang kurven ligger over terskelen i stedet for første gang den er under',
+          'Fordelingsfaktoren er merket som kroppsvann og ikke som kjønn, fordi det er det den faktisk måler',
+        ],
+      },
+    },
+  },
+  {
     id: 'kontrast',
     title: {
       en: 'Contrast checker',
