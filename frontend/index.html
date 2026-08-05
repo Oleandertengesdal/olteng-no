@@ -1,10 +1,81 @@
-<!DOCTYPE html>
-<html lang="">
+<!doctype html>
+<html lang="nb">
   <head>
-    <meta charset="UTF-8">
-    <link rel="icon" type="image/svg+xml" href="/src/assets/logo.svg">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Oleander Tengesdal</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Oleander Tengesdal — Dataingeniørstudent, NTNU</title>
+    <meta
+      name="description"
+      content="Oleander Tengesdal er dataingeniørstudent ved NTNU i Trondheim. Fullstack-utvikling med Java, Spring Boot, Vue og TypeScript — prosjekter, kode og hvordan de er bygget."
+    />
+    <meta name="author" content="Oleander Tengesdal" />
+    <meta name="theme-color" content="#faf7f2" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#13110f" media="(prefers-color-scheme: dark)" />
+    <link rel="canonical" href="https://olteng.no/" />
+
+    <!-- Open Graph / social sharing -->
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="nb_NO" />
+    <meta property="og:site_name" content="olteng.no" />
+    <meta property="og:title" content="Oleander Tengesdal — Dataingeniørstudent, NTNU" />
+    <meta
+      property="og:description"
+      content="Fullstack-utvikling med Java, Spring Boot, Vue og TypeScript — prosjekter, kode og hvordan de er bygget."
+    />
+    <meta property="og:url" content="https://olteng.no/" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="alternate icon" href="/favicon.ico" />
+
+    <!-- Structured data — helps recruiters' search results show the right thing -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "Oleander Tengesdal",
+        "url": "https://olteng.no/",
+        "jobTitle": "Dataingeniørstudent",
+        "email": "mailto:oleander.tengesdal@icloud.com",
+        "alumniOf": {
+          "@type": "CollegeOrUniversity",
+          "name": "NTNU — Norges teknisk-naturvitenskapelige universitet"
+        },
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Trondheim",
+          "addressCountry": "NO"
+        },
+        "sameAs": [
+          "https://github.com/Oleandertengesdal",
+          "https://www.linkedin.com/in/oleander-tengesdal-215bba333/"
+        ]
+      }
+    </script>
+
+    <!-- Typography: Fraunces (display serif) + IBM Plex Sans/Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Set the theme before first paint so dark mode never flashes -->
+    <script>
+      ;(function () {
+        try {
+          var saved = localStorage.getItem('theme')
+          var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+          if (saved === 'dark' || (!saved && prefersDark)) {
+            document.documentElement.classList.add('dark')
+          }
+        } catch (e) {
+          /* localStorage unavailable — fall back to light */
+        }
+      })()
+    </script>
   </head>
   <body>
     <div id="app"></div>

@@ -1,65 +1,74 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { RouterView } from 'vue-router'
 import TheHeader from './components/TheHeader.vue'
 import TheFooter from './components/TheFooter.vue'
-import { RouterView } from 'vue-router'
 
 const { t, locale } = useI18n()
 const isDark = ref(false)
 
 const toggleLanguage = () => {
   locale.value = locale.value === 'nb' ? 'en' : 'nb'
+  localStorage.setItem('locale', locale.value)
+  document.documentElement.lang = locale.value === 'nb' ? 'nb' : 'en'
 }
 
 const toggleDarkMode = () => {
   isDark.value = !isDark.value
 }
 
-// Watch for changes and update the document class
 watch(isDark, (val) => {
-  if (val) {
-    document.documentElement.classList.add('dark')
-    localStorage.setItem('theme', 'dark')
-  } else {
-    document.documentElement.classList.remove('dark')
-    localStorage.setItem('theme', 'light')
-  }
-}, { immediate: false })
+  document.documentElement.classList.toggle('dark', val)
+  localStorage.setItem('theme', val ? 'dark' : 'light')
+})
 
 onMounted(() => {
-  // Check localStorage or system preference
-  const savedTheme = localStorage.getItem('theme')
-  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-  
-  if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-    isDark.value = true
-    document.documentElement.classList.add('dark')
-  } else {
-    isDark.value = false
-    document.documentElement.classList.remove('dark')
+  // The inline script in index.html already applied the class before first
+  // paint — here we only sync the reactive flag to whatever it decided.
+  isDark.value = document.documentElement.classList.contains('dark')
+
+  const savedLocale = localStorage.getItem('locale')
+  if (savedLocale === 'nb' || savedLocale === 'en') {
+    locale.value = savedLocale
   }
+  document.documentElement.lang = locale.value === 'nb' ? 'nb' : 'en'
 })
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
-    <TheHeader 
-      :is-dark="isDark" 
-      @toggle-language="toggleLanguage" 
-      @toggle-dark-mode="toggleDarkMode" 
+  <div class="flex min-h-screen flex-col">
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:rounded-sm focus:border focus:border-ink focus:bg-paper focus:px-4 focus:py-2 focus:font-mono focus:text-xs focus:uppercase focus:tracking-widest"
+    >
+      {{ t('ui.skipToContent') }}
+    </a>
+
+    <TheHeader
+      :is-dark="isDark"
+      @toggle-language="toggleLanguage"
+      @toggle-dark-mode="toggleDarkMode"
     />
-    
-    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
-      <RouterView />
+
+    <main id="main" class="flex-grow">
+      <RouterView v-slot="{ Component }">
+        <Transition
+          mode="out-in"
+          enter-active-class="transition-opacity duration-300 ease-out"
+          enter-from-class="opacity-0"
+          leave-active-class="transition-opacity duration-150 ease-in"
+          leave-to-class="opacity-0"
+        >
+          <component :is="Component" />
+        </Transition>
+      </RouterView>
     </main>
 
-    <TheFooter 
-      :is-dark="isDark" 
-      @toggle-language="toggleLanguage" 
+    <TheFooter
+      :is-dark="isDark"
+      @toggle-language="toggleLanguage"
       @toggle-dark-mode="toggleDarkMode"
     />
   </div>
 </template>
-
-<style scoped></style>

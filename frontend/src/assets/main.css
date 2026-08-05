@@ -1,3 +1,294 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light;
+
+    /* Warm paper / ink palette — deliberately not default-Tailwind grey */
+    --c-paper: 250 247 242;
+    --c-surface: 255 253 249;
+    --c-raised: 243 238 230;
+    --c-ink: 26 22 18;
+    --c-muted: 106 97 86;
+    /* Darkened twice. First from 150/140/128 to clear the 3:1 floor, then
+       again to 116/107/97 when the contrast tool pointed out that --c-faint is
+       used for real 11px text — eyebrows, captions, axis labels — and text that
+       size needs 4.5:1, not 3:1. Worst surface is --c-raised at 4.52:1. */
+    --c-faint: 116 107 97;
+    --c-line: 227 219 206;
+    --c-accent: 166 60 31;
+    --c-accent-ink: 255 252 248;
+    --c-positive: 22 96 84;
+
+    /* Category palette — four warm-leaning hues that sit on paper without
+       fighting it. Each one carries meaning (see data/tech.ts); none of them
+       are decoration. All four clear 4.5:1 against --c-paper. */
+    --c-clay: 166 60 31;
+    --c-pine: 22 96 84;
+    --c-iris: 72 70 148;
+    --c-ochre: 138 90 16;
+  }
+
+  .dark {
+    color-scheme: dark;
+
+    --c-paper: 19 17 15;
+    --c-surface: 27 24 21;
+    --c-raised: 35 31 27;
+    --c-ink: 241 236 227;
+    --c-muted: 166 156 143;
+    /* Same correction in reverse: lightened until 11px text clears 4.5:1 */
+    --c-faint: 144 133 120;
+    --c-line: 56 50 43;
+    --c-accent: 225 141 102;
+    --c-accent-ink: 22 18 14;
+    --c-positive: 110 190 168;
+
+    --c-clay: 225 141 102;
+    --c-pine: 110 190 168;
+    --c-iris: 162 158 232;
+    --c-ochre: 224 173 92;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  body {
+    @apply bg-paper text-ink font-sans antialiased;
+    font-feature-settings:
+      'kern' 1,
+      'liga' 1,
+      'calt' 1;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Fraunces has optical-size, softness and "wonk" axes. WONK off and a low
+     SOFT keeps it a serious text serif rather than a quirky display face —
+     the quirk reads as decoration on a technical site. */
+  .font-display {
+    font-variation-settings:
+      'SOFT' 14,
+      'WONK' 0,
+      'opsz' 144;
+    letter-spacing: -0.015em;
+  }
+
+  /* ── Scroll reveal (driven by the v-reveal directive) ───────────────── */
+
+  [data-reveal='pending'] {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  [data-reveal='visible'] {
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity 0.75s cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0ms),
+      transform 0.75s cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0ms);
+  }
+
+  ::selection {
+    background-color: rgb(var(--c-accent) / 0.18);
+    color: rgb(var(--c-ink));
+  }
+
+  :focus-visible {
+    outline: 2px solid rgb(var(--c-accent));
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+}
+
+@layer components {
+  /* Small monospaced kicker used above section headings */
+  .eyebrow {
+    @apply font-mono text-[0.688rem] uppercase tracking-[0.18em] text-faint;
+  }
+
+  /* Page gutter — consistent across every view */
+  .shell {
+    @apply mx-auto w-full max-w-6xl px-5 sm:px-8 lg:px-10;
+  }
+
+  .prose-column {
+    @apply max-w-prose text-[1.0625rem] leading-[1.75] text-muted;
+  }
+
+  /* Text link with a hairline underline */
+  .link {
+    @apply relative inline-flex items-center gap-1.5 text-ink no-underline transition-colors duration-200;
+    background-image: linear-gradient(currentColor, currentColor);
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    background-size: 100% 1px;
+    padding-bottom: 1px;
+  }
+
+  .link:hover {
+    @apply text-accent;
+  }
+
+  .link-quiet {
+    @apply text-muted transition-colors duration-200 hover:text-ink;
+  }
+
+  /* Buttons — flat, square-ish, no gradient, no shadow */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-sm border px-5 py-2.5 font-mono text-[0.75rem] uppercase tracking-[0.12em] transition-all duration-200;
+  }
+
+  .btn-solid {
+    @apply border-ink bg-ink text-paper hover:border-accent hover:bg-accent hover:text-accent-ink;
+  }
+
+  .btn-outline {
+    @apply border-line bg-transparent text-ink hover:border-ink;
+  }
+
+  .rule {
+    @apply border-0 border-t border-line;
+  }
+
+  /* Hoverable list row — bleeds the tint into the page gutter so the row reads
+     as a full-width band rather than a floating card. */
+  .row {
+    @apply relative transition-colors duration-300;
+  }
+
+  .row::before {
+    content: '';
+    @apply pointer-events-none absolute inset-y-0 -left-4 -right-4 opacity-0 transition-opacity duration-300;
+    background-color: rgb(var(--c-raised) / 0.55);
+  }
+
+  .row:hover::before {
+    @apply opacity-100;
+  }
+
+  .row > * {
+    @apply relative;
+  }
+
+  /* Tech chip — square, hairline, quiet */
+  .chip {
+    @apply inline-flex items-center rounded-sm border border-line px-2.5 py-1 font-mono text-[0.688rem] tracking-wide text-muted transition-colors duration-300;
+  }
+
+  /* ── Oversized ghost numeral behind a section heading ────────────────── */
+
+  .ghost-number {
+    @apply pointer-events-none absolute select-none font-display font-medium leading-none;
+    top: -0.32em;
+    left: -0.06em;
+    font-size: clamp(5rem, 12vw, 9rem);
+    color: rgb(var(--c-ink) / 0.05);
+  }
+
+  /* ── Navigation link with an underline that draws in ─────────────────── */
+
+  .nav-link {
+    @apply relative py-1 font-mono text-[0.75rem] uppercase tracking-[0.12em] text-muted transition-colors duration-200 hover:text-ink;
+  }
+
+  .nav-link::after {
+    content: '';
+    @apply absolute inset-x-0 -bottom-0.5 h-px origin-left scale-x-0 bg-accent transition-transform duration-300;
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .nav-link:hover::after,
+  .nav-link.is-active::after {
+    @apply scale-x-100;
+  }
+
+  .nav-link.is-active {
+    @apply text-ink;
+  }
+
+  /* ── Infinite technology ticker ──────────────────────────────────────── */
+
+  .marquee {
+    @apply overflow-hidden;
+    /* Fade the strip out at both edges so it reads as endless */
+    mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  }
+
+  .marquee-track {
+    @apply flex w-max items-center;
+    animation: marquee-scroll var(--marquee-duration, 48s) linear infinite;
+  }
+
+  .marquee:hover .marquee-track {
+    animation-play-state: paused;
+  }
+
+  .marquee-item {
+    @apply flex shrink-0 items-center gap-6 whitespace-nowrap pr-6 font-mono text-[0.8125rem] uppercase tracking-[0.14em] text-muted;
+  }
+
+  @keyframes marquee-scroll {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  /* ── Portrait with an offset accent frame behind it ──────────────────── */
+
+  .portrait-frame {
+    @apply relative;
+  }
+
+  .portrait-frame::before {
+    content: '';
+    @apply pointer-events-none absolute inset-0 translate-x-3 translate-y-3 border transition-transform duration-500;
+    border-color: rgb(var(--c-accent) / 0.45);
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .portrait-frame > * {
+    @apply relative transition-transform duration-500;
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    transform: rotate(-1.25deg);
+  }
+
+  .portrait-frame:hover > * {
+    transform: rotate(0deg);
+  }
+
+  .portrait-frame:hover::before {
+    @apply translate-x-1.5 translate-y-1.5;
+  }
+}
