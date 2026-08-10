@@ -1,0 +1,47 @@
+{
+  "name": "dashboard",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "dashboard.olteng.no — verktøy, lenker og informasjon for studenter i Norge",
+  "scripts": {
+    "themes": "node scripts/build-themes.ts",
+    "contrast": "node scripts/check-contrast.ts",
+    "predev": "npm run themes",
+    "dev": "vite",
+    "prebuild": "npm run themes && npm run contrast",
+    "build": "npm run type-check && vite build",
+    "build-only": "vite build",
+    "preview": "vite preview",
+    "type-check": "vue-tsc --noEmit -p tsconfig.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "check": "npm run themes && npm run contrast && npm run type-check && npm run test"
+  },
+  "dependencies": {
+    "@fontsource-variable/fraunces": "^5.2.5",
+    "@fontsource/ibm-plex-mono": "^5.2.5",
+    "@fontsource/ibm-plex-sans": "^5.2.5",
+    "vue": "^3.5.27",
+    "vue-i18n": "^10.0.8",
+    "vue-router": "^5.0.1"
+  },
+  "devDependencies": {
+    "@tsconfig/node24": "^24.0.4",
+    "@types/node": "^24.10.9",
+    "@vitejs/plugin-vue": "^6.0.3",
+    "@vue/test-utils": "^2.4.6",
+    "@vue/tsconfig": "^0.8.1",
+    "autoprefixer": "^10.4.24",
+    "jsdom": "^27.4.0",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.19",
+    "typescript": "~5.9.3",
+    "vite": "^7.3.1",
+    "vitest": "^4.0.18",
+    "vue-tsc": "^3.2.4"
+  },
+  "engines": {
+    "node": ">=22.18.0"
+  }
+}

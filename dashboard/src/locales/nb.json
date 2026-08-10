@@ -1,0 +1,258 @@
+{
+  "common": {
+    "done": "Ferdig",
+    "reset": "Tilbakestill",
+    "close": "Lukk"
+  },
+  "nav": {
+    "privacy": "Personvern",
+    "links": "Lenker"
+  },
+  "links": {
+    "eyebrow": "Lenkekatalogen",
+    "title": "Alt lærestedet ditt gjemmer bak fem klikk.",
+    "lead": "Velg lærested, så bytter hele lenkesettet. Hver lenke har en merknad om hva systemet faktisk er til, fordi halvparten av dem heter noe som ikke sier noe.",
+    "search": "Søk i lenker",
+    "searchPlaceholder": "Skriv hva du leter etter",
+    "searchHint": "Søk i alle lenkene for {name} og de nasjonale. Prøv «eksamen», «bolig» eller «pensum».",
+    "searchHintNoInstitution": "Velg lærested for å søke i lenkene derfra. De nasjonale lenkene er søkbare uansett.",
+    "noResults": "Ingen lenker passer «{query}».",
+    "national": "Nasjonalt",
+    "keyMove": "Piltaster velger",
+    "keyOpen": "Enter åpner",
+    "keyClose": "Esc lukker",
+    "chooseInstitution": "Velg lærested",
+    "moreComing": "Fem læresteder så langt. Flere kommer — strukturen er lagd slik at et nytt lærested er én datafil, ikke en kodeendring.",
+    "change": "Bytt fra {name}",
+    "reviewed": "Lenkene ble sist gjennomgått {date}.",
+    "reviewedStale": "Lenkene ble sist gjennomgått {date} — det er {months} måneder siden. Noe kan ha endret seg.",
+    "reviewedNote": "«Gjennomgått» betyr kontrollert mot lærestedets egne sider, ikke at en maskin har pinget dem. En lenke kan svare fint og likevel peke på et system som ble lagt ned.",
+    "report": "Meld fra om noe som er feil",
+    "forget": "Glem lærestedet",
+    "pickFirst": "Velg et lærested over for å se lenkene."
+  },
+  "linksWidget": {
+    "noInstitution": "Ingen lærested valgt.",
+    "noInstitutionNote": "Velg lærested i lenkekatalogen, så kan du feste snarveier her.",
+    "toCatalogue": "Til lenkekatalogen",
+    "empty": "Ingen lenker festet.",
+    "emptyNote": "Velg de du bruker mest, så står de her neste gang du åpner siden.",
+    "choose": "Velg lenker",
+    "all": "alle {count}",
+    "pinnedCount": "{count} av {max} festet"
+  },
+  "a11y": {
+    "skip": "Hopp til innhold",
+    "moved": "{title} flyttet til plass {position} av {total}.",
+    "resized": "{title} er nå {w} ganger {h} celler.",
+    "removed": "{title} er fjernet."
+  },
+  "header": {
+    "add": "Legg til",
+    "arrange": "Flytt om",
+    "done": "Ferdig"
+  },
+  "theme": {
+    "follow": "Følg systemet",
+    "followNote": "Nå: {theme}",
+    "measured": "Kontrasten i alle modusene er målt, ikke gjettet. Bygget stopper hvis en farge faller under kravet."
+  },
+  "lang": {
+    "nb": "norsk",
+    "en": "engelsk",
+    "switchTo": "Bytt til {lang}"
+  },
+  "data": {
+    "label": "Data",
+    "export": "Last ned alt",
+    "import": "Hent inn fil",
+    "note": "Alt du legger inn bor i denne nettleseren. Tømmer du nettleserdata, er det borte. Denne filen er eneste sikkerhetskopi.",
+    "exported": "Lastet ned.",
+    "imported": "Hentet inn {count} felter. Laster siden på nytt.",
+    "error": {
+      "parse": "Filen er ikke gyldig JSON.",
+      "shape": "Filen er ikke fra dette dashbordet.",
+      "newer": "Filen er fra en nyere versjon (v{detail}). Oppdater siden og prøv igjen.",
+      "write": "Fikk ikke skrevet «{detail}». Lagringen kan være full."
+    },
+    "storage": {
+      "unavailable": "Nettleseren tillater ikke lagring akkurat nå. Dashbordet virker, men glemmer alt når du lukker fanen.",
+      "full": "Lagringen er full. Fjern noen widgets, eller tøm gamle data."
+    }
+  },
+  "picker": {
+    "title": "Legg til widget",
+    "close": "Lukk",
+    "search": "Søk",
+    "noResults": "Ingen widgets passer «{query}».",
+    "needsNetwork": "Trenger nett",
+    "add": "Legg til",
+    "added": "Lagt til",
+    "progress": "{count} widgets finnes så langt. Katalogen bygges ut etappe for etappe."
+  },
+  "onboarding": {
+    "eyebrow": "Første gang",
+    "title": "Velg et utgangspunkt.",
+    "lead": "Dashbordet er ditt å sette sammen. Start med et forslag, og flytt om på det etterpå — ingenting av dette er låst, og alt lagres i din egen nettleser.",
+    "coverage": "{available} av {total} widgets finnes",
+    "pickYourself": "Velg selv",
+    "startEmpty": "Start tomt",
+    "stage": "Dette er etappe 1 av prosjektet: grunnmuren. Rutenettet, fargemodusene, lagringen og språkbyttet er på plass, og klokken er den første widgeten. Vær, avganger, timeplan og resten av katalogen kommer i tur og orden."
+  },
+  "empty": {
+    "title": "Tomt dashbord.",
+    "lead": "Ingen widgets akkurat nå. Legg til den første, så bygger du derfra.",
+    "add": "Legg til widget"
+  },
+  "edit": {
+    "hint": "Dra en widget dit du vil ha den, eller bruk knappene i hjørnet. Med tastaturet: gå til en widget med tabulator, flytt med piltastene, endre størrelse med + og −, fjern med Delete."
+  },
+  "frame": {
+    "editable": "{title}. Flytt med piltastene, endre størrelse med pluss og minus, fjern med Delete.",
+    "settings": "Innstillinger for {title}",
+    "remove": "Fjern {title}",
+    "moveLeft": "Flytt {title} til venstre",
+    "moveRight": "Flytt {title} til høyre",
+    "moveUp": "Flytt {title} opp",
+    "moveDown": "Flytt {title} ned",
+    "grow": "Gjør {title} større",
+    "shrink": "Gjør {title} mindre",
+    "failed": "Fikk ikke lastet denne widgeten.",
+    "failedNote": "Resten av dashbordet virker som før. Last siden på nytt, så prøver den igjen."
+  },
+  "clock": {
+    "week": "Uke",
+    "studyWeek": "Studieuke",
+    "estimate": "anslag",
+    "betweenSemesters": "mellom semestre",
+    "showSeconds": "Vis sekunder",
+    "semester": "Semesteret",
+    "semesterNote": "Standardverdiene er typiske for norske læresteder, ikke fasit. Ditt lærested starter kanskje i en annen uke — rett tallene her, så stemmer studieuken.",
+    "springStart": "Vår, første uke",
+    "springLength": "Vår, antall uker",
+    "autumnStart": "Høst, første uke",
+    "autumnLength": "Høst, antall uker"
+  },
+  "remote": {
+    "loading": "Henter data",
+    "never": "Ikke hentet ennå",
+    "updated": "Oppdatert {age}",
+    "stale": "Fra {age} — ikke oppdatert siden",
+    "refresh": "Hent på nytt",
+    "retry": "Prøv igjen",
+    "error": {
+      "offline": "Fikk ikke kontakt. Er du på nett?",
+      "timeout": "Kilden svarte ikke i tide.",
+      "http": "Kilden svarte med en feil.",
+      "httpStatus": "Kilden svarte med feilkode {status}.",
+      "parse": "Svaret fra kilden var ikke som ventet."
+    }
+  },
+  "weather": {
+    "noPlace": "Ingen sted valgt.",
+    "noPlaceNote": "Søk opp stedet du vil ha været for. Det lagres i nettleseren din, ikke noe annet sted.",
+    "choosePlace": "Velg sted",
+    "feelsLike": "føles som {value}°",
+    "wind": "{value} m/s",
+    "totalRain": "{mm} mm nedbør de neste tolv timene",
+    "curveSummary": "Temperatur de neste {hours} timene: fra {low} til {high} grader. Nedbør: {mm} millimeter til sammen.",
+    "searchPlace": "Søk etter sted",
+    "searching": "Søker",
+    "noResults": "Ingen treff på «{query}».",
+    "saved": "Lagrede steder",
+    "forget": "Fjern {name}",
+    "useLocation": "Bruk posisjonen min",
+    "locating": "Finner posisjon",
+    "locationNote": "Nettleseren spør deg først. Koordinatene blir liggende i denne maskinen, og det eneste som sendes ut er et oppslag mot Open-Meteo.",
+    "locationFailed": "Fikk ikke posisjonen. Du kan søke opp stedet i stedet.",
+    "myLocation": "Min posisjon"
+  },
+  "departures": {
+    "noStop": "Ingen holdeplass valgt.",
+    "noStopNote": "Søk opp holdeplassen du reiser fra. Du kan lagre tre.",
+    "chooseStop": "Velg holdeplass",
+    "none": "Ingen avganger de nærmeste to timene.",
+    "now": "nå",
+    "minutes": "{minutes} min",
+    "delayed": "{minutes} min forsinket, går {clock}",
+    "cancelled": "Innstilt",
+    "scheduled": "rutetid",
+    "scheduledNote": "Tiden er fra ruteplanen, ikke fra sanntidssystemet.",
+    "quay": "spor {quay}",
+    "searchStop": "Søk etter holdeplass",
+    "noResults": "Ingen holdeplass heter «{query}».",
+    "saved": "Lagrede holdeplasser",
+    "forget": "Fjern {name}",
+    "count": "Antall avganger",
+    "full": "Tre holdeplasser er nok. Fjern en for å legge til en ny."
+  },
+  "countdowns": {
+    "empty": "Ingen nedtellinger.",
+    "emptyNote": "Legg inn en eksamen, en frist, eller hva som helst annet du teller ned til.",
+    "add": "Legg til",
+    "days": "dager",
+    "hoursMinutes": "t {minutes} min",
+    "past": "for {days} dager siden",
+    "titlePlaceholder": "Eksamen i matte 3",
+    "titleLabel": "Hva du teller ned til",
+    "date": "Dato",
+    "time": "Klokkeslett",
+    "timeNote": "Uten klokkeslett gjelder fristen ut hele dagen.",
+    "remove": "Fjern {title}",
+    "hidePast": "Skjul det som er passert"
+  },
+  "timetable": {
+    "empty": "Ingen timeplan lagt inn.",
+    "emptyNote": "Last ned .ics-filen fra TimeEdit eller kalenderen til lærestedet ditt, og legg den inn her.",
+    "import": "Legg inn timeplan",
+    "today": "I dag",
+    "nothing": "Ingenting på timeplanen.",
+    "allDay": "hele dagen",
+    "inProgress": "Pågår nå",
+    "unsupported": "{count} hendelser gjentar seg månedlig eller årlig og vises bare første gang.",
+    "fromFile": "Fra fil",
+    "chooseFile": "Velg .ics-fil",
+    "fileNote": "Filen leses her i nettleseren og lagres lokalt. Den sendes ingen steder.",
+    "fromUrl": "Fra abonnementslenke",
+    "fetch": "Hent",
+    "urlNote": "De fleste læresteder tillater ikke at nettlesere henter kalenderen deres direkte. Virker det ikke, er filen veien.",
+    "urlBlocked": "Lærestedet tillater ikke at denne siden henter kalenderen. Last den ned som fil og legg den inn i stedet.",
+    "urlStatus": "Adressen svarte med feilkode {status}.",
+    "badUrl": "Det ser ikke ut som en nettadresse.",
+    "tooBig": "Filen er for stor til å lagres i nettleseren. Har du valgt riktig fil?",
+    "noEvents": "Fant ingen hendelser i filen. Er det riktig fil?",
+    "imported": "Leste {count} hendelser.",
+    "importedAt": "Lagt inn {when}",
+    "remove": "Fjern timeplanen",
+    "showPast": "Vis også det som er ferdig i dag"
+  },
+  "footer": {
+    "promise": "Ingen konto, ingen server, ingen sporing, ingen informasjonskapsler. Alt du legger inn blir i nettleseren din."
+  },
+  "privacy": {
+    "eyebrow": "Personvern",
+    "title": "Ingenting forlater nettleseren din.",
+    "lead": "Dette er ikke en hensikt eller en ambisjon. Det er hvordan siden er bygget, og under står det hvordan du kan kontrollere at det stemmer.",
+    "local": {
+      "title": "Alt lagres lokalt",
+      "body": "Oppsettet ditt, fargemodusen, språkvalget og alt du skriver inn i en widget ligger i localStorage i denne nettleseren, på denne maskinen. Det sendes ingen steder. Bruker du dashbordet på telefonen og på PC-en, er det to atskilte oppsett — det er prisen for at det ikke finnes noen server, og den er bevisst."
+    },
+    "noAccounts": {
+      "title": "Ingen konto, ingen sporing",
+      "body": "Det finnes ingen innlogging, ingen brukerprofil og ingen analyseverktøy. Siden setter ingen informasjonskapsler. Det er ingen banner å klikke bort, fordi det ikke er noe å samtykke til."
+    },
+    "network": {
+      "title": "Når siden snakker med noen andre",
+      "body": "Noen widgets henter data utenfra — vær, sanntidsavganger og strømpriser. De forespørslene går direkte fra nettleseren din til kilden, uten å innom noen server her. Widgets som trenger nett er merket i velgeren, og henter ingenting før du legger dem til."
+    },
+    "backup": {
+      "title": "Sikkerhetskopien er din",
+      "body": "Fordi ingenting lagres på en server, finnes det ingen som kan hente oppsettet ditt tilbake. Tømmer du nettleserdata, er det borte. Derfor kan alt lastes ned som én JSON-fil under «Data», og hentes inn igjen samme vei — på en ny maskin, i en annen nettleser, eller etter en opprydding."
+    },
+    "verify": {
+      "title": "Slik kontrollerer du det",
+      "body": "Åpne utviklerverktøyene i nettleseren, gå til nettverksfanen og last siden på nytt. Du ser hva som lastes: siden selv, skriftene, og ingenting annet før du legger til en widget som trenger nett. Skriftene ligger på samme tjener som siden, nettopp for at ikke en fontlenke skal sende IP-adressen din til noen."
+    },
+    "footnote": "Har du funnet noe som ikke stemmer med det som står her, vil jeg gjerne vite om det."
+  }
+}

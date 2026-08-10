@@ -20,7 +20,7 @@ const point = (iso: string, nok: number): PricePoint => ({
   key: iso,
   start: new Date(iso),
   end: new Date(new Date(iso).getTime() + 3_600_000),
-  nokExVat: nok,
+  oreExVat: nok,
   eurPerKwh: nok / 11,
 })
 
@@ -79,7 +79,7 @@ describe('landssnitt', () => {
     ])
 
     expect(result).toHaveLength(1)
-    expect(result[0]!.nokExVat).toBe(2)
+    expect(result[0]!.oreExVat).toBe(2)
   })
 
   it('stiller soner på linje etter tidsstempel, ikke etter posisjon i lista', () => {
@@ -91,8 +91,8 @@ describe('landssnitt', () => {
     ])
 
     expect(result).toHaveLength(2)
-    expect(result[0]!.nokExVat).toBe(1)
-    expect(result[1]!.nokExVat).toBe(3)
+    expect(result[0]!.oreExVat).toBe(1)
+    expect(result[1]!.oreExVat).toBe(3)
   })
 
   it('holder rekkefølgen kronologisk uansett hvilken sone som kom først', () => {

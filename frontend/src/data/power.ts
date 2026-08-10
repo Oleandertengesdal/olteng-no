@@ -93,8 +93,15 @@ export interface PricePoint {
   key: string
   start: Date
   end: Date
-  /** Kroner per kWh, uten mva — slik API-et leverer det */
-  nokExVat: number
+  /**
+   * Øre per kWh, uten mva.
+   *
+   * API-et leverer kroner, men hele resten av appen regner i øre — det er
+   * enheten strømbransjen, strømstøtteordningen og folk flest bruker. Å blande
+   * kroner og øre i samme kodebase er en klassisk kilde til feil på en faktor
+   * hundre, så omregningen skjer på ett eneste sted: `parsePoints` under.
+   */
+  oreExVat: number
   eurPerKwh: number
 }
 
@@ -193,12 +200,13 @@ const cache = new Map<string, ZoneDay>()
 
 export const clearPriceCache = () => cache.clear()
 
+/** Eneste stedet i kodebasen der kroner blir til øre */
 export const parsePoints = (raw: RawPricePoint[]): PricePoint[] =>
   raw.map((entry) => ({
     key: entry.time_start,
     start: new Date(entry.time_start),
     end: new Date(entry.time_end),
-    nokExVat: entry.NOK_per_kWh,
+    oreExVat: entry.NOK_per_kWh * 100,
     eurPerKwh: entry.EUR_per_kWh,
   }))
 
@@ -253,9 +261,9 @@ export const fetchAllZones = async (
  * Prisene fra API-et er uten mva. Nord-Norge har fritak, så der skal det aldri
  * legges på noe uansett hva brukeren har huket av.
  */
-export const withVat = (nokExVat: number, zone: ZoneId, includeVat: boolean): number => {
-  if (!includeVat || zoneById(zone).vatExempt) return nokExVat
-  return nokExVat * (1 + VAT_RATE)
+export const withVat = (oreExVat: number, zone: ZoneId, includeVat: boolean): number => {
+  if (!includeVat || zoneById(zone).vatExempt) return oreExVat
+  return oreExVat * (1 + VAT_RATE)
 }
 
 /* ── Statistikk ────────────────────────────────────────────────────────────── */
@@ -278,14 +286,14 @@ export const statsFor = (points: PricePoint[]): DayStats => {
   let total = 0
 
   for (const point of points) {
-    if (point.nokExVat < cheapest.nokExVat) cheapest = point
-    if (point.nokExVat > priciest.nokExVat) priciest = point
-    total += point.nokExVat
+    if (point.oreExVat < cheapest.oreExVat) cheapest = point
+    if (point.oreExVat > priciest.oreExVat) priciest = point
+    total += point.oreExVat
   }
 
   return {
-    min: cheapest.nokExVat,
-    max: priciest.nokExVat,
+    min: cheapest.oreExVat,
+    max: priciest.oreExVat,
     mean: total / points.length,
     cheapest,
     priciest,
@@ -311,16 +319,16 @@ export const nationalAverage = (days: ZoneDay[]): PricePoint[] => {
     for (const point of day.points) {
       const bucket = buckets.get(point.key)
       if (bucket) {
-        bucket.total += point.nokExVat
+        bucket.total += point.oreExVat
         bucket.count += 1
       } else {
-        buckets.set(point.key, { point, total: point.nokExVat, count: 1 })
+        buckets.set(point.key, { point, total: point.oreExVat, count: 1 })
       }
     }
   }
 
   return [...buckets.values()]
-    .map(({ point, total, count }) => ({ ...point, nokExVat: total / count }))
+    .map(({ point, total, count }) => ({ ...point, oreExVat: total / count }))
     .sort((a, b) => a.start.getTime() - b.start.getTime())
 }
 
@@ -379,10 +387,10 @@ export interface ZoneSummary {
 
 /* ── Formatering ───────────────────────────────────────────────────────────── */
 
-export const formatKr = (value: number): string =>
-  new Intl.NumberFormat('nb-NO', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(
-    value,
-  )
+/** Øre med én desimal — nok presisjon, og det er slik bransjen oppgir det */
+export const formatOre = (ore: number): string =>
+  new Intl.NumberFormat('nb-NO', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(ore)
 
-export const formatOre = (value: number): string =>
-  new Intl.NumberFormat('nb-NO', { maximumFractionDigits: 0 }).format(value * 100)
+/** Hele kroner, til månedsbeløp og totaler */
+export const formatKroner = (ore: number): string =>
+  new Intl.NumberFormat('nb-NO', { maximumFractionDigits: 0 }).format(ore / 100)

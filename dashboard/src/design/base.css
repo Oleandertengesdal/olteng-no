@@ -1,0 +1,129 @@
+@import './themes.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Radhøyden i rutenettet. Fast, slik at en widget som venter på data tar
+       nøyaktig like mye plass som en som har fått dem — rutenettet skal ikke
+       hoppe når svaret kommer. */
+    --row-height: 84px;
+  }
+
+  @media (min-width: 640px) {
+    :root {
+      --row-height: 92px;
+    }
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-paper text-ink font-sans antialiased;
+    font-feature-settings:
+      'kern' 1,
+      'liga' 1,
+      'calt' 1;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Fraunces har aksene optical size, softness og «wonk». WONK av og lav SOFT
+     holder den som en seriøs tekstserif framfor en pyntefont — kvirken leser
+     som dekorasjon på et verktøy folk åpner tjue ganger om dagen. */
+  .font-display {
+    font-variation-settings:
+      'SOFT' 14,
+      'WONK' 0,
+      'opsz' 144;
+    letter-spacing: -0.015em;
+  }
+
+  /* Alt som endrer seg — klokke, nedtelling, priser — må ha like brede sifre,
+     ellers vandrer tallet sidelengs hvert sekund. */
+  .tnum {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum' 1;
+  }
+
+  :focus-visible {
+    outline: 2px solid rgb(var(--c-accent));
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  ::selection {
+    background-color: rgb(var(--c-accent) / 0.18);
+    color: rgb(var(--c-ink));
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /* Ba brukeren om mindre bevegelse? Da hopper alt rett til sluttilstanden.
+     Ikke «raskere animasjon» — ingen animasjon. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  /* Liten monospace-etikett over overskrifter. Størrelsen er 11 px, som er
+     grunnen til at --c-faint måles mot 4,5:1 og ikke 3:1. */
+  .eyebrow {
+    @apply font-mono text-[0.688rem] uppercase tracking-[0.16em] text-faint;
+  }
+
+  /* Sidemarg — lik på tvers av alle visninger. */
+  .shell {
+    @apply mx-auto w-full max-w-[1600px] px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Kortflaten. Hårfin linje, ingen skygge, nesten ingen radius.
+     Hierarki lages med linje og flatetone, ikke med dybde. */
+  .card {
+    @apply border border-line bg-surface;
+  }
+
+  /* Knapp: rolig i hvile, tydelig ved berøring. Bevegelsen er 1 px opp —
+     nok til å merkes, lite nok til at layouten ikke rikker seg. */
+  .btn {
+    @apply inline-flex items-center gap-2 border border-line bg-surface px-3 py-1.5;
+    @apply font-mono text-[0.75rem] uppercase tracking-[0.08em] text-ink;
+    @apply transition-[color,background-color,border-color,transform] duration-200 ease-editorial;
+  }
+
+  .btn:hover {
+    @apply border-accent text-accent;
+    transform: translateY(-1px);
+  }
+
+  .btn:active {
+    transform: translateY(0);
+  }
+
+  .btn-primary {
+    @apply border-accent bg-accent text-accent-ink;
+  }
+
+  .btn-primary:hover {
+    @apply border-accent bg-accent text-accent-ink;
+  }
+}

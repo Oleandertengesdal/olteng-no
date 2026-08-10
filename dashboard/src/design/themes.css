@@ -1,0 +1,83 @@
+/* GENERERT AV scripts/build-themes.ts — IKKE REDIGER.
+ * Kilden er src/design/themes.ts. Kjør `npm run themes` etter endring. */
+
+:root,
+[data-theme='papir'] {
+  color-scheme: light;
+  --c-paper: 250 247 242;
+  --c-surface: 255 253 249;
+  --c-raised: 243 238 230;
+  --c-ink: 26 22 18;
+  --c-muted: 102 93 82;
+  --c-faint: 116 107 97;
+  --c-line: 227 219 206;
+  --c-accent: 163 57 28;
+  --c-accent-ink: 255 252 248;
+  --c-positive: 22 96 84;
+  --c-warning: 130 82 6;
+  --c-critical: 172 33 33;
+}
+
+[data-theme='natt'] {
+  color-scheme: dark;
+  --c-paper: 19 17 15;
+  --c-surface: 27 24 21;
+  --c-raised: 35 31 27;
+  --c-ink: 241 236 227;
+  --c-muted: 172 162 149;
+  --c-faint: 150 140 127;
+  --c-line: 56 50 43;
+  --c-accent: 225 141 102;
+  --c-accent-ink: 22 18 14;
+  --c-positive: 110 190 168;
+  --c-warning: 224 173 92;
+  --c-critical: 240 138 128;
+}
+
+[data-theme='skog'] {
+  color-scheme: dark;
+  --c-paper: 21 28 25;
+  --c-surface: 28 36 32;
+  --c-raised: 36 46 41;
+  --c-ink: 226 235 228;
+  --c-muted: 158 176 165;
+  --c-faint: 140 158 147;
+  --c-line: 50 62 56;
+  --c-accent: 141 191 138;
+  --c-accent-ink: 12 20 15;
+  --c-positive: 126 196 150;
+  --c-warning: 214 176 108;
+  --c-critical: 232 143 133;
+}
+
+[data-theme='hav'] {
+  color-scheme: light;
+  --c-paper: 240 244 248;
+  --c-surface: 249 251 253;
+  --c-raised: 227 234 241;
+  --c-ink: 16 24 33;
+  --c-muted: 82 98 114;
+  --c-faint: 85 100 116;
+  --c-line: 206 217 228;
+  --c-accent: 11 88 122;
+  --c-accent-ink: 249 251 253;
+  --c-positive: 13 97 82;
+  --c-warning: 124 78 6;
+  --c-critical: 163 30 42;
+}
+
+[data-theme='kontrast'] {
+  color-scheme: light;
+  --c-paper: 255 255 255;
+  --c-surface: 255 255 255;
+  --c-raised: 240 240 240;
+  --c-ink: 0 0 0;
+  --c-muted: 45 45 45;
+  --c-faint: 58 58 58;
+  --c-line: 90 90 90;
+  --c-accent: 0 63 153;
+  --c-accent-ink: 255 255 255;
+  --c-positive: 0 84 62;
+  --c-warning: 106 56 0;
+  --c-critical: 163 0 32;
+}

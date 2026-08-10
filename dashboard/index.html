@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="nb">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>dashboard.olteng.no — verktøy for studenter i Norge</title>
+    <meta
+      name="description"
+      content="Et dashbord for studenter i Norge. Timeplan, avganger, vær, ukenummer, lesetimer, Lånekassen og lenkene til lærestedet ditt — samlet på én side. Alt lagres i din egen nettleser."
+    />
+    <link rel="canonical" href="https://dashboard.olteng.no/" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="nb_NO" />
+    <meta property="og:site_name" content="dashboard.olteng.no" />
+    <meta property="og:title" content="dashboard.olteng.no — verktøy for studenter i Norge" />
+    <meta property="og:url" content="https://dashboard.olteng.no/" />
+
+    <!-- Settes på nytt av useTheme når modusen er kjent. Verdien her er Papir,
+         som er standardmodusen. -->
+    <meta name="theme-color" content="rgb(250 247 242)" />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <script>
+      /*
+       * Fargemodus før første tegning.
+       *
+       * Dette er den ene tingen som må skje før Vue starter. Uten det tegnes
+       * siden lys i et par hundre millisekunder før JavaScript rekker å sette
+       * mørk modus, og et dashbord man åpner tjue ganger om dagen blinker
+       * hvitt tjue ganger om dagen.
+       *
+       * Logikken er en kopi av src/design/useTheme.ts, og det er med vilje: den
+       * må kjøre uten en modulimport. Holdes den liten nok til å leses på fem
+       * sekunder, er duplikatet til å leve med.
+       */
+      ;(function () {
+        try {
+          var stored = localStorage.getItem('dashboard.v1.theme')
+          var choice = stored ? JSON.parse(stored) : 'system'
+          if (choice === 'system' || !choice) {
+            choice = matchMedia('(prefers-color-scheme: dark)').matches ? 'natt' : 'papir'
+          }
+          document.documentElement.dataset.theme = choice
+        } catch (e) {
+          /* Ingen lagring tilgjengelig. :root er Papir, og det holder. */
+        }
+      })()
+    </script>
+  </head>
+
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

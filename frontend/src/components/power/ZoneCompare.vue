@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { bgClasses } from '@/data/tech'
-import { formatKr, percentDiff, zoneById, type ZoneId, type ZoneSummary } from '@/data/power'
+import { formatOre, percentDiff, zoneById, type ZoneId, type ZoneSummary } from '@/data/power'
 
 const props = defineProps<{
   summaries: ZoneSummary[]
@@ -67,7 +67,7 @@ const ranked = computed(() =>
 
         <span class="ml-auto shrink-0 text-right">
           <span class="block font-mono text-[0.875rem] text-ink">
-            {{ formatKr(row.mean) }}
+            {{ formatOre(row.mean) }}
           </span>
           <span
             v-if="row.diff !== null"

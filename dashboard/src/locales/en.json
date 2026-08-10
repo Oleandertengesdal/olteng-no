@@ -1,0 +1,258 @@
+{
+  "common": {
+    "done": "Done",
+    "reset": "Reset",
+    "close": "Close"
+  },
+  "nav": {
+    "privacy": "Privacy",
+    "links": "Links"
+  },
+  "links": {
+    "eyebrow": "The link catalogue",
+    "title": "Everything your institution hides behind five clicks.",
+    "lead": "Choose your institution and the whole set of links changes. Every link says what the system is actually for, because half of them are named something that tells you nothing.",
+    "search": "Search links",
+    "searchPlaceholder": "Type what you are looking for",
+    "searchHint": "Search every link for {name} and the national ones. Try “exam”, “housing” or “reading”.",
+    "searchHintNoInstitution": "Choose an institution to search its links. The national links are searchable either way.",
+    "noResults": "No links match “{query}”.",
+    "national": "National",
+    "keyMove": "Arrow keys select",
+    "keyOpen": "Enter opens",
+    "keyClose": "Esc closes",
+    "chooseInstitution": "Choose your institution",
+    "moreComing": "Five institutions so far. More are coming — the structure is built so a new one is a single data file, not a code change.",
+    "change": "Change from {name}",
+    "reviewed": "The links were last reviewed on {date}.",
+    "reviewedStale": "The links were last reviewed on {date} — that is {months} months ago. Something may have changed.",
+    "reviewedNote": "“Reviewed” means checked against the institution's own pages, not that a machine pinged them. A link can answer fine and still point at a system that was shut down.",
+    "report": "Report something wrong",
+    "forget": "Forget my institution",
+    "pickFirst": "Choose an institution above to see the links."
+  },
+  "linksWidget": {
+    "noInstitution": "No institution chosen.",
+    "noInstitutionNote": "Choose your institution in the link catalogue, then you can pin shortcuts here.",
+    "toCatalogue": "To the link catalogue",
+    "empty": "No links pinned.",
+    "emptyNote": "Pick the ones you use most and they will be here next time you open the page.",
+    "choose": "Choose links",
+    "all": "all {count}",
+    "pinnedCount": "{count} of {max} pinned"
+  },
+  "a11y": {
+    "skip": "Skip to content",
+    "moved": "{title} moved to position {position} of {total}.",
+    "resized": "{title} is now {w} by {h} cells.",
+    "removed": "{title} removed."
+  },
+  "header": {
+    "add": "Add",
+    "arrange": "Arrange",
+    "done": "Done"
+  },
+  "theme": {
+    "follow": "Follow system",
+    "followNote": "Currently: {theme}",
+    "measured": "Contrast in every mode is measured, not guessed. The build stops if a colour falls below the threshold."
+  },
+  "lang": {
+    "nb": "Norwegian",
+    "en": "English",
+    "switchTo": "Switch to {lang}"
+  },
+  "data": {
+    "label": "Data",
+    "export": "Download everything",
+    "import": "Load a file",
+    "note": "Everything you enter lives in this browser. Clear your browser data and it is gone. This file is the only backup there is.",
+    "exported": "Downloaded.",
+    "imported": "Loaded {count} fields. Reloading the page.",
+    "error": {
+      "parse": "That file is not valid JSON.",
+      "shape": "That file is not from this dashboard.",
+      "newer": "That file is from a newer version (v{detail}). Reload the page and try again.",
+      "write": "Could not write “{detail}”. Storage may be full."
+    },
+    "storage": {
+      "unavailable": "This browser will not let the page store anything right now. The dashboard works, but forgets everything when you close the tab.",
+      "full": "Storage is full. Remove a few widgets, or clear old data."
+    }
+  },
+  "picker": {
+    "title": "Add a widget",
+    "close": "Close",
+    "search": "Search",
+    "noResults": "No widgets match “{query}”.",
+    "needsNetwork": "Needs network",
+    "add": "Add",
+    "added": "Added",
+    "progress": "{count} widgets so far. The catalogue is being built out stage by stage."
+  },
+  "onboarding": {
+    "eyebrow": "First time",
+    "title": "Pick a starting point.",
+    "lead": "The dashboard is yours to assemble. Start from a suggestion and rearrange it afterwards — none of this is locked, and everything is stored in your own browser.",
+    "coverage": "{available} of {total} widgets exist",
+    "pickYourself": "Choose your own",
+    "startEmpty": "Start empty",
+    "stage": "This is stage 1 of the project: the foundations. The grid, the colour modes, storage and the language switch are in place, and the clock is the first widget. Weather, departures, timetable and the rest of the catalogue follow in order."
+  },
+  "empty": {
+    "title": "Empty dashboard.",
+    "lead": "No widgets right now. Add the first one and build from there.",
+    "add": "Add a widget"
+  },
+  "edit": {
+    "hint": "Drag a widget where you want it, or use the buttons in the corner. With the keyboard: tab to a widget, move it with the arrow keys, resize with + and −, remove with Delete."
+  },
+  "frame": {
+    "editable": "{title}. Move with the arrow keys, resize with plus and minus, remove with Delete.",
+    "settings": "Settings for {title}",
+    "remove": "Remove {title}",
+    "moveLeft": "Move {title} left",
+    "moveRight": "Move {title} right",
+    "moveUp": "Move {title} up",
+    "moveDown": "Move {title} down",
+    "grow": "Make {title} larger",
+    "shrink": "Make {title} smaller",
+    "failed": "This widget could not be loaded.",
+    "failedNote": "The rest of the dashboard is unaffected. Reload the page and it will try again."
+  },
+  "clock": {
+    "week": "Week",
+    "studyWeek": "Study week",
+    "estimate": "estimate",
+    "betweenSemesters": "between semesters",
+    "showSeconds": "Show seconds",
+    "semester": "The semester",
+    "semesterNote": "The defaults are typical for Norwegian institutions, not authoritative. Yours may start in a different week — correct the numbers here and the study week will be right.",
+    "springStart": "Spring, first week",
+    "springLength": "Spring, weeks",
+    "autumnStart": "Autumn, first week",
+    "autumnLength": "Autumn, weeks"
+  },
+  "remote": {
+    "loading": "Fetching data",
+    "never": "Not fetched yet",
+    "updated": "Updated {age}",
+    "stale": "From {age} — not updated since",
+    "refresh": "Fetch again",
+    "retry": "Try again",
+    "error": {
+      "offline": "Could not reach the source. Are you online?",
+      "timeout": "The source did not answer in time.",
+      "http": "The source answered with an error.",
+      "httpStatus": "The source answered with error code {status}.",
+      "parse": "The answer from the source was not what we expected."
+    }
+  },
+  "weather": {
+    "noPlace": "No place chosen.",
+    "noPlaceNote": "Search for the place you want the weather for. It is stored in your browser and nowhere else.",
+    "choosePlace": "Choose a place",
+    "feelsLike": "feels like {value}°",
+    "wind": "{value} m/s",
+    "totalRain": "{mm} mm of precipitation over the next twelve hours",
+    "curveSummary": "Temperature over the next {hours} hours: from {low} to {high} degrees. Precipitation: {mm} millimetres in total.",
+    "searchPlace": "Search for a place",
+    "searching": "Searching",
+    "noResults": "No matches for “{query}”.",
+    "saved": "Saved places",
+    "forget": "Remove {name}",
+    "useLocation": "Use my location",
+    "locating": "Finding your location",
+    "locationNote": "Your browser asks you first. The coordinates stay on this machine, and the only thing sent out is a lookup to Open-Meteo.",
+    "locationFailed": "Could not get your location. You can search for the place instead.",
+    "myLocation": "My location"
+  },
+  "departures": {
+    "noStop": "No stop chosen.",
+    "noStopNote": "Search for the stop you travel from. You can save three.",
+    "chooseStop": "Choose a stop",
+    "none": "No departures in the next two hours.",
+    "now": "now",
+    "minutes": "{minutes} min",
+    "delayed": "{minutes} min late, leaves {clock}",
+    "cancelled": "Cancelled",
+    "scheduled": "timetabled",
+    "scheduledNote": "This time comes from the timetable, not from the live system.",
+    "quay": "platform {quay}",
+    "searchStop": "Search for a stop",
+    "noResults": "No stop is called “{query}”.",
+    "saved": "Saved stops",
+    "forget": "Remove {name}",
+    "count": "Number of departures",
+    "full": "Three stops is enough. Remove one to add another."
+  },
+  "countdowns": {
+    "empty": "No countdowns.",
+    "emptyNote": "Add an exam, a deadline, or anything else you are counting down to.",
+    "add": "Add",
+    "days": "days",
+    "hoursMinutes": "h {minutes} min",
+    "past": "{days} days ago",
+    "titlePlaceholder": "Maths 3 exam",
+    "titleLabel": "What you are counting down to",
+    "date": "Date",
+    "time": "Time",
+    "timeNote": "With no time, the deadline runs to the end of that day.",
+    "remove": "Remove {title}",
+    "hidePast": "Hide what has passed"
+  },
+  "timetable": {
+    "empty": "No timetable loaded.",
+    "emptyNote": "Download the .ics file from TimeEdit or your institution's calendar, and load it here.",
+    "import": "Load a timetable",
+    "today": "Today",
+    "nothing": "Nothing on the timetable.",
+    "allDay": "all day",
+    "inProgress": "In progress",
+    "unsupported": "{count} events repeat monthly or yearly and are shown only the first time.",
+    "fromFile": "From a file",
+    "chooseFile": "Choose an .ics file",
+    "fileNote": "The file is read here in your browser and stored locally. It is not sent anywhere.",
+    "fromUrl": "From a subscription link",
+    "fetch": "Fetch",
+    "urlNote": "Most institutions do not allow browsers to fetch their calendar directly. If it does not work, the file is the way.",
+    "urlBlocked": "Your institution does not allow this page to fetch the calendar. Download it as a file and load that instead.",
+    "urlStatus": "The address answered with error code {status}.",
+    "badUrl": "That does not look like a web address.",
+    "tooBig": "The file is too large to store in the browser. Is it the right file?",
+    "noEvents": "Found no events in the file. Is it the right file?",
+    "imported": "Read {count} events.",
+    "importedAt": "Loaded {when}",
+    "remove": "Remove the timetable",
+    "showPast": "Also show what is finished today"
+  },
+  "footer": {
+    "promise": "No account, no server, no tracking, no cookies. Everything you enter stays in your browser."
+  },
+  "privacy": {
+    "eyebrow": "Privacy",
+    "title": "Nothing leaves your browser.",
+    "lead": "This is not an intention or an ambition. It is how the site is built, and below is how you can check that it holds.",
+    "local": {
+      "title": "Everything is stored locally",
+      "body": "Your layout, colour mode, language and anything you type into a widget live in localStorage in this browser, on this machine. None of it is sent anywhere. Use the dashboard on your phone and on your computer and you have two separate setups — that is the price of having no server, and it is deliberate."
+    },
+    "noAccounts": {
+      "title": "No account, no tracking",
+      "body": "There is no sign-in, no user profile and no analytics. The site sets no cookies. There is no banner to dismiss, because there is nothing to consent to."
+    },
+    "network": {
+      "title": "When the page does talk to someone",
+      "body": "A few widgets fetch data from outside — weather, live departures, electricity prices. Those requests go straight from your browser to the source, without passing through any server here. Widgets that need the network are marked in the picker, and fetch nothing until you add them."
+    },
+    "backup": {
+      "title": "The backup is yours",
+      "body": "Because nothing is stored on a server, nobody can restore your setup for you. Clear your browser data and it is gone. So everything can be downloaded as a single JSON file under “Data”, and loaded back the same way — on a new machine, in another browser, or after a clear-out."
+    },
+    "verify": {
+      "title": "How to check",
+      "body": "Open your browser's developer tools, go to the network tab and reload. You can see exactly what loads: the page itself, the fonts, and nothing else until you add a widget that needs the network. The fonts are served from the same host as the page, precisely so that a font link does not hand your IP address to someone else."
+    },
+    "footnote": "If you find anything that does not match what is written here, I would like to know."
+  }
+}

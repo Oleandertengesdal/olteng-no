@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { ZONE_RINGS, ZONE_LABEL_ANCHORS, buildProjection, ringToPath } from '@/data/norway'
-import { levelFor, formatKr, zoneById, type ZoneId, type ZoneSummary } from '@/data/power'
+import { levelFor, formatOre, zoneById, type ZoneId, type ZoneSummary } from '@/data/power'
 
 const props = defineProps<{
   summaries: ZoneSummary[]
@@ -60,7 +60,7 @@ const areas = computed(() =>
       label:
         mean === undefined
           ? `${id} — ${t('ui.noResults')}`
-          : `${id}, ${zone.city}: ${formatKr(mean)} ${t('power.perKwh')}`,
+          : `${id}, ${zone.city}: ${formatOre(mean)} ${t('power.perKwh')}`,
     }
   }),
 )
@@ -119,7 +119,7 @@ const choose = (id: ZoneId) => emit('select', id)
             text-anchor="middle"
             class="pointer-events-none fill-paper/85 font-mono text-[11px]"
           >
-            {{ formatKr(area.mean) }}
+            {{ formatOre(area.mean) }}
           </text>
         </g>
       </g>

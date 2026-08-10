@@ -5,7 +5,7 @@ import { RouterLink } from 'vue-router'
 import PriceChart from '@/components/power/PriceChart.vue'
 import ZoneCompare from '@/components/power/ZoneCompare.vue'
 import NorwayMap from '@/components/power/NorwayMap.vue'
-import { bgClasses, textClasses } from '@/data/tech'
+import { textClasses } from '@/data/tech'
 import { projects } from '@/data/projects'
 import {
   ZONES,
@@ -15,27 +15,43 @@ import {
   statsFor,
   levelFor,
   currentHourIndex,
-  percentDiff,
-  withVat,
   osloDate,
   hourLabel,
   tomorrowMayBePublished,
-  formatKr,
   formatOre,
+  formatKroner,
   PricesNotPublishedError,
   type ChartPoint,
   type ZoneDay,
   type ZoneId,
   type ZoneSummary,
 } from '@/data/power'
+import {
+  currentTariffs,
+  DEFAULT_USER_TARIFF,
+  breakdown,
+  breakdownParts,
+  compareSchemes,
+  breakEvenSpot,
+  dayTotals,
+  monthlyEstimate,
+  thresholdInclVat,
+  type Scheme,
+  type UserTariff,
+} from '@/data/pricing'
 
 const { t, locale } = useI18n()
+
+const SETTINGS_KEY = 'olteng.power.v2'
 
 /* ── State ─────────────────────────────────────────────────────────────── */
 
 const zone = ref<ZoneId>('NO3')
 const dayOffset = ref<0 | 1>(0)
-const includeVat = ref(true)
+const scheme = ref<Scheme>('spot')
+const user = ref<UserTariff>({ ...DEFAULT_USER_TARIFF })
+const monthlyKwh = ref(1200)
+const settingsOpen = ref(false)
 const hovered = ref<number | null>(null)
 
 const days = ref<ZoneDay[]>([])
@@ -44,23 +60,57 @@ const loading = ref(true)
 const notPublished = ref(false)
 const error = ref<string | null>(null)
 
+const tariffs = currentTariffs()
+
 let controller: AbortController | null = null
 
-/**
- * A reactive clock, ticking once a minute.
- *
- * Everything time-dependent on this page reads from it rather than calling
- * `new Date()` inside a computed. A computed only re-evaluates when one of its
- * reactive dependencies changes, and wall-clock time is not one — so without
- * this tick a tab left open overnight would keep showing yesterday's prices
- * under today's heading, the "now" marker would freeze on the hour the page
- * happened to load, and the tomorrow button would stay disabled past 13:00.
- */
+/** Reactive clock so a tab left open overnight still shows the right day */
 const now = ref(new Date())
 let clock: ReturnType<typeof setInterval> | undefined
 
 const targetDate = computed(() => osloDate(dayOffset.value, now.value))
 const tomorrowAvailable = computed(() => tomorrowMayBePublished(now.value))
+
+/* ── Persistence ───────────────────────────────────────────────────────── */
+
+onMounted(() => {
+  try {
+    const saved = localStorage.getItem(SETTINGS_KEY)
+    if (!saved) return
+    const parsed = JSON.parse(saved) as {
+      zone?: ZoneId
+      scheme?: Scheme
+      user?: UserTariff
+      monthlyKwh?: number
+    }
+    if (parsed.zone) zone.value = parsed.zone
+    if (parsed.scheme) scheme.value = parsed.scheme
+    if (parsed.user) user.value = { ...DEFAULT_USER_TARIFF, ...parsed.user }
+    if (parsed.monthlyKwh) monthlyKwh.value = parsed.monthlyKwh
+  } catch {
+    // Blocked or corrupt storage — the defaults are fine
+  }
+})
+
+watch(
+  [zone, scheme, user, monthlyKwh],
+  () => {
+    try {
+      localStorage.setItem(
+        SETTINGS_KEY,
+        JSON.stringify({
+          zone: zone.value,
+          scheme: scheme.value,
+          user: user.value,
+          monthlyKwh: monthlyKwh.value,
+        }),
+      )
+    } catch {
+      /* private mode */
+    }
+  },
+  { deep: true },
+)
 
 /* ── Loading ───────────────────────────────────────────────────────────── */
 
@@ -77,8 +127,6 @@ const load = async () => {
     const result = await fetchAllZones(targetDate.value, controller.signal)
 
     if (result.days.length === 0) {
-      // Every zone failed. If tomorrow simply is not out yet, say exactly that
-      // rather than showing a generic error the visitor cannot act on.
       notPublished.value = dayOffset.value === 1
       if (!notPublished.value) error.value = t('power.errorGeneric')
       days.value = []
@@ -108,84 +156,112 @@ onBeforeUnmount(() => {
 })
 
 watch(dayOffset, load)
-
-// Midnight rollover: the date this page is showing changed under our feet, so
-// fetch the new day rather than leaving stale prices on screen.
 watch(targetDate, (next, previous) => {
   if (next !== previous) load()
 })
 
-/* ── Derived data ──────────────────────────────────────────────────────── */
+/* ── Pricing ───────────────────────────────────────────────────────────── */
 
+const activeZone = computed(() => zoneById(zone.value))
 const selectedDay = computed(() => days.value.find((day) => day.zone === zone.value) ?? null)
+const spotPrices = computed(() => selectedDay.value?.points.map((point) => point.oreExVat) ?? [])
 
-/** Raw (ex-VAT) statistics — used for colour levels, which VAT cannot change */
-const rawStats = computed(() => statsFor(selectedDay.value?.points ?? []))
+/** Shared context for every pricing call on this page */
+const pricingContext = computed(() => ({
+  zone: zone.value,
+  tariffs,
+  user: user.value,
+  vatExempt: activeZone.value.vatExempt,
+}))
 
-const display = (value: number, forZone: ZoneId = zone.value) =>
-  withVat(value, forZone, includeVat.value)
-
-const nationalPoints = computed(() => nationalAverage(days.value))
+const priceAt = (spot: number, forScheme: Scheme = scheme.value) =>
+  breakdown({ ...pricingContext.value, spotOreExVat: spot, scheme: forScheme })
 
 const nowIndex = computed(() =>
   dayOffset.value === 0 ? currentHourIndex(selectedDay.value?.points ?? [], now.value) : -1,
 )
+
+const focusIndex = computed(() => hovered.value ?? (nowIndex.value >= 0 ? nowIndex.value : 0))
+const focusPoint = computed(() => selectedDay.value?.points[focusIndex.value] ?? null)
+
+const current = computed(() => (focusPoint.value ? priceAt(focusPoint.value.oreExVat) : null))
+const currentParts = computed(() => (current.value ? breakdownParts(current.value) : []))
+
+const comparison = computed(() =>
+  focusPoint.value
+    ? compareSchemes({ ...pricingContext.value, spotOreExVat: focusPoint.value.oreExVat })
+    : null,
+)
+
+const breakEven = computed(() => breakEvenSpot(tariffs, user.value))
+const totals = computed(() =>
+  dayTotals(spotPrices.value, { ...pricingContext.value, scheme: scheme.value }),
+)
+const monthly = computed(() =>
+  monthlyEstimate(monthlyKwh.value, spotPrices.value, {
+    ...pricingContext.value,
+    scheme: scheme.value,
+  }),
+)
+
+/* ── Chart ─────────────────────────────────────────────────────────────────
+   Bars show what you actually pay. The dashed line shows what the same hour
+   would have cost without the support scheme — so the gap between them is the
+   support, visible at a glance rather than buried in a number.             */
+
+const rawStats = computed(() => statsFor(selectedDay.value?.points ?? []))
 
 const chartPoints = computed<ChartPoint[]>(
   () =>
     selectedDay.value?.points.map((point, index) => ({
       key: point.key,
       label: hourLabel(point.start),
-      value: display(point.nokExVat),
-      level: levelFor(point.nokExVat, rawStats.value),
+      value: priceAt(point.oreExVat).total,
+      level: levelFor(point.oreExVat, rawStats.value),
       isNow: index === nowIndex.value,
     })) ?? [],
 )
 
-/**
- * The national line is drawn without VAT variation between zones — it is a
- * plain mean of the five areas, so we apply the selected zone's VAT rule to
- * keep the two series comparable on the same axis.
- */
-const nationalSeries = computed(() => nationalPoints.value.map((point) => display(point.nokExVat)))
+const withoutSupport = computed(() =>
+  spotPrices.value.map(
+    (spot) =>
+      breakdown({
+        ...pricingContext.value,
+        spotOreExVat: spot,
+        scheme: 'spot',
+        tariffs: { ...tariffs, supportThresholdOre: Number.POSITIVE_INFINITY },
+      }).total,
+  ),
+)
 
-const nationalMean = computed(() => display(statsFor(nationalPoints.value).mean))
+/* ── Zones ─────────────────────────────────────────────────────────────── */
 
 const zoneSummaries = computed<ZoneSummary[]>(() =>
   days.value.map((day) => ({
     zone: day.zone,
-    mean: withVat(statsFor(day.points).mean, day.zone, includeVat.value),
+    mean: dayTotals(
+      day.points.map((point) => point.oreExVat),
+      {
+        zone: day.zone,
+        tariffs,
+        user: user.value,
+        vatExempt: zoneById(day.zone).vatExempt,
+        scheme: scheme.value,
+      },
+    ).averageTotal,
   })),
 )
 
-const zoneMean = computed(() => display(rawStats.value.mean))
-const vsNational = computed(() => percentDiff(zoneMean.value, nationalMean.value))
-
-/** Whatever the pointer is on, falling back to the current hour */
-const focusIndex = computed(() => hovered.value ?? (nowIndex.value >= 0 ? nowIndex.value : 0))
-const focusPoint = computed(() => selectedDay.value?.points[focusIndex.value] ?? null)
-
-const headline = computed(() => {
-  const point = focusPoint.value
-  if (!point) return null
-  return {
-    value: display(point.nokExVat),
-    hour: hourLabel(point.start),
-    isNow: focusIndex.value === nowIndex.value,
-  }
+const nationalMean = computed(() => {
+  const points = nationalAverage(days.value)
+  if (points.length === 0) return 0
+  return dayTotals(
+    points.map((point) => point.oreExVat),
+    { ...pricingContext.value, scheme: scheme.value },
+  ).averageTotal
 })
 
-const cheapest = computed(() => {
-  const point = rawStats.value.cheapest
-  return point ? { hour: hourLabel(point.start), value: display(point.nokExVat) } : null
-})
-
-const priciest = computed(() => {
-  const point = rawStats.value.priciest
-  return point ? { hour: hourLabel(point.start), value: display(point.nokExVat) } : null
-})
-
-const activeZone = computed(() => zoneById(zone.value))
+/* ── Labels ────────────────────────────────────────────────────────────── */
 
 const dateLabel = computed(() =>
   new Intl.DateTimeFormat(locale.value === 'nb' ? 'nb-NO' : 'en-GB', {
@@ -196,10 +272,22 @@ const dateLabel = computed(() =>
   }).format(new Date(`${targetDate.value}T12:00:00+02:00`)),
 )
 
-/**
- * The write-up is stored alongside every other project rather than duplicated
- * here, so the projects list and this page can never drift apart.
- */
+const chartCaption = computed(() =>
+  t('power.chartCaption', {
+    zone: zone.value,
+    city: activeZone.value.city,
+    date: dateLabel.value,
+  }),
+)
+
+const partTone: Record<string, string> = {
+  energy: 'bg-iris',
+  markup: 'bg-clay',
+  tax: 'bg-ochre',
+  grid: 'bg-pine',
+  vat: 'bg-raised',
+}
+
 const build = computed(() => {
   const entry = projects.find((project) => project.id === 'strompris')
   if (!entry?.showcase) return null
@@ -210,14 +298,6 @@ const build = computed(() => {
     githubUrl: entry.githubUrl,
   }
 })
-
-const chartCaption = computed(() =>
-  t('power.chartCaption', {
-    zone: zone.value,
-    city: activeZone.value.city,
-    date: dateLabel.value,
-  }),
-)
 </script>
 
 <template>
@@ -229,7 +309,6 @@ const chartCaption = computed(() =>
       <span aria-hidden="true">&larr;</span> {{ t('backToProjects') }}
     </RouterLink>
 
-    <!-- Header -->
     <header class="mt-10 max-w-3xl border-b border-line pb-10">
       <span class="block h-1 w-16 bg-pine" aria-hidden="true" />
       <p class="eyebrow mt-6 text-positive">{{ t('live') }}</p>
@@ -237,84 +316,132 @@ const chartCaption = computed(() =>
       <p class="prose-column mt-6">{{ t('power.lead') }}</p>
     </header>
 
-    <!-- Controls -->
-    <div class="mt-10 flex flex-wrap items-end justify-between gap-6 border-b border-line pb-6">
-      <div>
-        <p class="eyebrow mb-3">{{ t('power.zone') }}</p>
-        <div class="flex flex-wrap gap-1.5">
-          <button
-            v-for="option in ZONES"
-            :key="option.id"
-            type="button"
-            class="flex items-center gap-2 rounded-sm border px-3 py-2 font-mono text-[0.75rem] tracking-wide transition-colors duration-200"
-            :class="
-              option.id === zone
-                ? 'border-ink bg-ink text-paper'
-                : 'border-line text-muted hover:border-ink hover:text-ink'
-            "
-            :aria-pressed="option.id === zone"
-            @click="zone = option.id"
-          >
-            <span
-              v-if="option.id !== zone"
-              class="h-1.5 w-1.5 shrink-0"
-              :class="bgClasses[option.hue]"
-              aria-hidden="true"
-            />
-            {{ option.id }}
-            <span class="hidden sm:inline">· {{ option.city }}</span>
-          </button>
-        </div>
-      </div>
-
-      <div class="flex flex-wrap items-end gap-6">
+    <!-- ── Controls ────────────────────────────────────────────────────── -->
+    <div class="mt-10 space-y-6 border-b border-line pb-8">
+      <div class="flex flex-wrap items-end justify-between gap-6">
         <div>
-          <p class="eyebrow mb-3">{{ t('power.day') }}</p>
-          <div class="flex gap-1.5">
+          <p class="eyebrow mb-3">{{ t('power.zone') }}</p>
+          <div class="flex flex-wrap gap-1.5">
             <button
+              v-for="option in ZONES"
+              :key="option.id"
               type="button"
               class="rounded-sm border px-3 py-2 font-mono text-[0.75rem] tracking-wide transition-colors"
               :class="
-                dayOffset === 0
+                option.id === zone
                   ? 'border-ink bg-ink text-paper'
                   : 'border-line text-muted hover:border-ink hover:text-ink'
               "
-              @click="dayOffset = 0"
+              :aria-pressed="option.id === zone"
+              @click="zone = option.id"
             >
-              {{ t('power.today') }}
-            </button>
-            <button
-              type="button"
-              class="rounded-sm border px-3 py-2 font-mono text-[0.75rem] tracking-wide transition-colors disabled:cursor-not-allowed disabled:opacity-40"
-              :class="
-                dayOffset === 1
-                  ? 'border-ink bg-ink text-paper'
-                  : 'border-line text-muted hover:border-ink hover:text-ink'
-              "
-              :disabled="!tomorrowAvailable"
-              :title="tomorrowAvailable ? undefined : t('power.tomorrowLocked')"
-              @click="dayOffset = 1"
-            >
-              {{ t('power.tomorrow') }}
+              {{ option.id }}<span class="hidden sm:inline"> · {{ option.city }}</span>
             </button>
           </div>
         </div>
 
-        <label class="flex cursor-pointer items-center gap-2.5 pb-2">
+        <div class="flex flex-wrap items-end gap-6">
+          <div>
+            <p class="eyebrow mb-3">{{ t('power.day') }}</p>
+            <div class="flex gap-1.5">
+              <button
+                type="button"
+                class="rounded-sm border px-3 py-2 font-mono text-[0.75rem] transition-colors"
+                :class="
+                  dayOffset === 0
+                    ? 'border-ink bg-ink text-paper'
+                    : 'border-line text-muted hover:border-ink hover:text-ink'
+                "
+                @click="dayOffset = 0"
+              >
+                {{ t('power.today') }}
+              </button>
+              <button
+                type="button"
+                class="rounded-sm border px-3 py-2 font-mono text-[0.75rem] transition-colors disabled:cursor-not-allowed disabled:opacity-40"
+                :class="
+                  dayOffset === 1
+                    ? 'border-ink bg-ink text-paper'
+                    : 'border-line text-muted hover:border-ink hover:text-ink'
+                "
+                :disabled="!tomorrowAvailable"
+                :title="tomorrowAvailable ? undefined : t('power.tomorrowLocked')"
+                @click="dayOffset = 1"
+              >
+                {{ t('power.tomorrow') }}
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <p class="eyebrow mb-3">{{ t('power.scheme') }}</p>
+            <div class="flex gap-1.5">
+              <button
+                v-for="option in [
+                  { value: 'spot' as Scheme, key: 'power.schemeSpot' },
+                  { value: 'norgespris' as Scheme, key: 'power.schemeNorgespris' },
+                ]"
+                :key="option.value"
+                type="button"
+                class="rounded-sm border px-3 py-2 font-mono text-[0.75rem] transition-colors"
+                :class="
+                  scheme === option.value
+                    ? 'border-ink bg-ink text-paper'
+                    : 'border-line text-muted hover:border-ink hover:text-ink'
+                "
+                :aria-pressed="scheme === option.value"
+                @click="scheme = option.value"
+              >
+                {{ t(option.key) }}
+              </button>
+            </div>
+          </div>
+
+          <button type="button" class="btn btn-outline" @click="settingsOpen = !settingsOpen">
+            {{ t('power.settings') }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Your own tariff -->
+      <div v-if="settingsOpen" class="grid gap-6 border border-line p-5 sm:grid-cols-3">
+        <label class="block">
+          <span class="eyebrow">{{ t('power.markup') }}</span>
           <input
-            v-model="includeVat"
+            v-model.number="user.markupOre"
+            type="number"
+            min="0"
+            max="50"
+            step="0.5"
+            class="mt-2 w-full rounded-sm border border-line bg-surface px-2.5 py-1.5 font-mono text-[0.8125rem] text-ink focus:border-ink focus:outline-none"
+          />
+        </label>
+        <label class="block">
+          <span class="eyebrow">{{ t('power.grid') }}</span>
+          <input
+            v-model.number="user.gridOre"
+            type="number"
+            min="0"
+            max="100"
+            step="1"
+            class="mt-2 w-full rounded-sm border border-line bg-surface px-2.5 py-1.5 font-mono text-[0.8125rem] text-ink focus:border-ink focus:outline-none"
+          />
+        </label>
+        <label class="flex items-end gap-2.5 pb-2">
+          <input
+            v-model="user.electricityTaxExempt"
             type="checkbox"
             class="h-4 w-4 shrink-0 accent-accent"
-            :disabled="activeZone.vatExempt"
           />
-          <span class="font-mono text-[0.75rem] tracking-wide text-muted">
-            {{ t('power.withVat') }}
-          </span>
+          <span class="text-[0.875rem] text-ink">{{ t('power.taxExempt') }}</span>
         </label>
+        <p class="font-mono text-[0.688rem] leading-relaxed text-faint sm:col-span-3">
+          {{ t('power.settingsNote') }}
+        </p>
       </div>
     </div>
 
-    <!-- States -->
+    <!-- ── States ──────────────────────────────────────────────────────── -->
     <p v-if="loading" class="py-24 text-center font-mono text-sm text-faint">
       {{ t('ui.loading') }}
     </p>
@@ -335,76 +462,148 @@ const chartCaption = computed(() =>
       </button>
     </div>
 
-    <!-- Data -->
-    <template v-else-if="selectedDay">
-      <!-- Headline numbers -->
-      <div class="grid gap-8 border-b border-line py-10 md:grid-cols-12">
+    <template v-else-if="current && comparison">
+      <!-- ── What you actually pay ─────────────────────────────────────── -->
+      <section class="grid gap-10 border-b border-line py-10 md:grid-cols-12">
         <div class="md:col-span-5">
           <p class="eyebrow">
             {{
-              headline?.isNow ? t('power.rightNow') : t('power.atHour', { hour: headline?.hour })
+              focusIndex === nowIndex
+                ? t('power.youPayNow')
+                : t('power.youPayAt', { hour: hourLabel(focusPoint!.start) })
             }}
           </p>
           <p
-            class="mt-3 font-display text-[clamp(3rem,9vw,5rem)] font-medium leading-none"
+            class="mt-3 font-display text-[clamp(3rem,10vw,5.5rem)] font-medium leading-none"
             :class="textClasses[activeZone.hue]"
           >
-            {{ headline ? formatKr(headline.value) : '—' }}
+            {{ formatOre(current.total) }}
+            <span class="text-faint">{{ t('power.ore') }}</span>
           </p>
           <p class="mt-2 font-mono text-[0.8125rem] tracking-wide text-muted">
-            {{ t('power.perKwh') }} · {{ headline ? formatOre(headline.value) : '—' }}
-            {{ t('power.ore') }}
+            {{ t('power.perKwhAllIn') }}
           </p>
           <p class="mt-4 text-[0.9375rem] text-muted">
-            {{ activeZone.id }} · {{ activeZone.city }},
-            {{ activeZone.region[locale as 'en' | 'nb'] }} — {{ dateLabel }}
+            {{ activeZone.id }} · {{ activeZone.city }} — {{ dateLabel }}
           </p>
+
+          <!-- Stacked bar -->
+          <div class="mt-8 flex h-3 w-full overflow-hidden rounded-sm" aria-hidden="true">
+            <span
+              v-for="part in currentParts"
+              :key="part.key"
+              class="h-full transition-all duration-500 ease-editorial"
+              :class="partTone[part.tone]"
+              :style="{ width: `${(part.value / current.total) * 100}%` }"
+            />
+          </div>
         </div>
 
-        <dl class="grid grid-cols-2 gap-6 md:col-span-7 md:grid-cols-4">
-          <div>
-            <dt class="eyebrow">{{ t('power.dayAverage') }}</dt>
-            <dd class="mt-2 font-mono text-lg text-ink">{{ formatKr(zoneMean) }}</dd>
-          </div>
-          <div>
-            <dt class="eyebrow">{{ t('power.cheapestHour') }}</dt>
-            <dd class="mt-2 font-mono text-lg text-pine">
-              {{ cheapest ? formatKr(cheapest.value) : '—' }}
-            </dd>
-            <dd class="font-mono text-[0.688rem] text-faint">
-              {{ t('power.atHourShort', { hour: cheapest?.hour ?? '—' }) }}
-            </dd>
-          </div>
-          <div>
-            <dt class="eyebrow">{{ t('power.priciestHour') }}</dt>
-            <dd class="mt-2 font-mono text-lg text-clay">
-              {{ priciest ? formatKr(priciest.value) : '—' }}
-            </dd>
-            <dd class="font-mono text-[0.688rem] text-faint">
-              {{ t('power.atHourShort', { hour: priciest?.hour ?? '—' }) }}
-            </dd>
-          </div>
-          <div>
-            <dt class="eyebrow">{{ t('power.vsNational') }}</dt>
-            <dd
-              class="mt-2 font-mono text-lg"
-              :class="(vsNational ?? 0) > 0 ? 'text-clay' : 'text-pine'"
+        <!-- Breakdown -->
+        <div class="md:col-span-6 md:col-start-7">
+          <p class="eyebrow mb-4">{{ t('power.breakdown') }}</p>
+          <dl>
+            <div class="flex items-baseline justify-between border-t border-line py-2.5">
+              <dt class="text-[0.9375rem] text-muted">{{ t('power.spotPrice') }}</dt>
+              <dd class="font-mono text-[0.875rem] text-ink">{{ formatOre(current.spot) }}</dd>
+            </div>
+            <div
+              v-if="current.support > 0"
+              class="flex items-baseline justify-between border-t border-line py-2.5"
             >
-              <template v-if="vsNational !== null">
-                {{ vsNational > 0 ? '+' : '' }}{{ vsNational.toFixed(0) }} %
-              </template>
-              <template v-else>—</template>
-            </dd>
-            <dd class="font-mono text-[0.688rem] text-faint">{{ formatKr(nationalMean) }}</dd>
-          </div>
-        </dl>
-      </div>
+              <dt class="text-[0.9375rem] text-pine">{{ t('power.support') }}</dt>
+              <dd class="font-mono text-[0.875rem] text-pine">
+                &minus;{{ formatOre(current.support) }}
+              </dd>
+            </div>
+            <div
+              v-for="part in currentParts"
+              :key="part.key"
+              class="flex items-baseline justify-between border-t border-line py-2.5"
+            >
+              <dt class="flex items-center gap-2.5 text-[0.9375rem] text-muted">
+                <span class="h-2 w-2 shrink-0" :class="partTone[part.tone]" aria-hidden="true" />
+                {{ t(`power.part.${part.key}`) }}
+              </dt>
+              <dd class="font-mono text-[0.875rem] text-ink">{{ formatOre(part.value) }}</dd>
+            </div>
+            <div class="flex items-baseline justify-between border-y-2 border-ink py-3">
+              <dt class="font-medium text-ink">{{ t('power.total') }}</dt>
+              <dd class="font-mono text-[1.0625rem] font-medium text-ink">
+                {{ formatOre(current.total) }} {{ t('power.ore') }}
+              </dd>
+            </div>
+          </dl>
+        </div>
+      </section>
 
-      <!-- Chart -->
+      <!-- ── Which scheme is cheaper ───────────────────────────────────── -->
+      <section class="border-b border-line py-10">
+        <div class="grid gap-10 md:grid-cols-12">
+          <div class="md:col-span-4">
+            <h2 class="font-display text-2xl font-medium text-ink">
+              {{ t('power.compareSchemes') }}
+            </h2>
+            <p class="prose-column mt-4 text-[0.9375rem]">{{ t('power.compareSchemesLead') }}</p>
+          </div>
+
+          <div class="md:col-span-7 md:col-start-6">
+            <div class="grid grid-cols-2 gap-px border border-line bg-line">
+              <div
+                class="bg-paper px-5 py-5"
+                :class="comparison.cheaper === 'spot' ? 'ring-2 ring-inset ring-pine' : ''"
+              >
+                <p class="eyebrow">{{ t('power.schemeSpot') }}</p>
+                <p class="mt-2 font-display text-2xl font-medium text-ink">
+                  {{ formatOre(comparison.spotTotal) }}
+                </p>
+              </div>
+              <div
+                class="bg-paper px-5 py-5"
+                :class="comparison.cheaper === 'norgespris' ? 'ring-2 ring-inset ring-pine' : ''"
+              >
+                <p class="eyebrow">{{ t('power.schemeNorgespris') }}</p>
+                <p class="mt-2 font-display text-2xl font-medium text-ink">
+                  {{ formatOre(comparison.norgesprisTotal) }}
+                </p>
+              </div>
+            </div>
+
+            <p class="mt-6 text-[1.0625rem] leading-relaxed text-ink">
+              {{
+                t('power.verdict', {
+                  scheme:
+                    comparison.cheaper === 'spot'
+                      ? t('power.schemeSpot')
+                      : t('power.schemeNorgespris'),
+                  diff: formatOre(Math.abs(comparison.savingWithNorgespris)),
+                })
+              }}
+            </p>
+
+            <p
+              class="mt-4 border-l-2 border-ochre py-1 pl-4 text-[0.9375rem] leading-relaxed text-muted"
+            >
+              {{ t('power.breakEven', { price: formatOre(breakEven) }) }}
+            </p>
+
+            <p class="mt-4 font-mono text-[0.688rem] leading-relaxed text-faint">
+              {{
+                t('power.thresholdNote', {
+                  ex: formatOre(tariffs.supportThresholdOre),
+                  incl: formatOre(thresholdInclVat(tariffs)),
+                  share: tariffs.supportShare * 100,
+                })
+              }}
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Hour by hour ──────────────────────────────────────────────── -->
       <section class="border-b border-line py-10">
         <div class="mb-6 flex flex-wrap items-baseline justify-between gap-4">
           <h2 class="font-display text-2xl font-medium text-ink">{{ t('power.chartHeading') }}</h2>
-
           <ul class="flex flex-wrap items-center gap-x-5 gap-y-2">
             <li
               v-for="item in [
@@ -425,7 +624,7 @@ const chartCaption = computed(() =>
                 class="h-px w-5 shrink-0 border-t border-dashed border-ink"
                 aria-hidden="true"
               />
-              {{ t('power.legendNational') }}
+              {{ t('power.legendWithoutSupport') }}
             </li>
           </ul>
         </div>
@@ -433,16 +632,100 @@ const chartCaption = computed(() =>
         <PriceChart
           v-model:hovered="hovered"
           :points="chartPoints"
-          :average="nationalSeries"
+          :average="withoutSupport"
           :caption="chartCaption"
         />
 
         <p class="mt-4 font-mono text-[0.688rem] leading-relaxed text-faint">
           {{ t('power.chartNote') }}
         </p>
+
+        <dl class="mt-8 grid grid-cols-2 gap-6 border-t border-line pt-6 sm:grid-cols-4">
+          <div>
+            <dt class="eyebrow">{{ t('power.dayAverage') }}</dt>
+            <dd class="mt-2 font-mono text-lg text-ink">{{ formatOre(totals.averageTotal) }}</dd>
+          </div>
+          <div>
+            <dt class="eyebrow">{{ t('power.cheapestHour') }}</dt>
+            <dd class="mt-2 font-mono text-lg text-pine">{{ formatOre(totals.cheapestTotal) }}</dd>
+          </div>
+          <div>
+            <dt class="eyebrow">{{ t('power.priciestHour') }}</dt>
+            <dd class="mt-2 font-mono text-lg text-clay">{{ formatOre(totals.priciestTotal) }}</dd>
+          </div>
+          <div>
+            <dt class="eyebrow">{{ t('power.supportedHours') }}</dt>
+            <dd class="mt-2 font-mono text-lg text-ink">
+              {{ totals.hoursWithSupport }}<span class="text-faint">/{{ spotPrices.length }}</span>
+            </dd>
+          </div>
+        </dl>
       </section>
 
-      <!-- Zone comparison: map on the left, ranking on the right -->
+      <!-- ── Monthly ───────────────────────────────────────────────────── -->
+      <section class="border-b border-line py-10">
+        <div class="grid gap-10 md:grid-cols-12">
+          <div class="md:col-span-4">
+            <h2 class="font-display text-2xl font-medium text-ink">
+              {{ t('power.monthHeading') }}
+            </h2>
+            <p class="prose-column mt-4 text-[0.9375rem]">{{ t('power.monthLead') }}</p>
+          </div>
+
+          <div class="md:col-span-7 md:col-start-6">
+            <label class="eyebrow block" for="kwh">{{ t('power.monthlyUse') }}</label>
+            <div class="mt-3 flex items-center gap-4">
+              <input
+                id="kwh"
+                v-model.number="monthlyKwh"
+                type="range"
+                min="200"
+                max="8000"
+                step="100"
+                class="flex-1 accent-accent"
+              />
+              <span class="w-24 shrink-0 text-right font-mono text-sm text-ink">
+                {{ monthlyKwh }} kWh
+              </span>
+            </div>
+
+            <dl class="mt-8 grid grid-cols-2 gap-6">
+              <div>
+                <dt class="eyebrow">{{ t('power.monthTotal') }}</dt>
+                <dd class="mt-2 font-display text-3xl font-medium text-ink">
+                  {{ formatKroner(monthly.total * 100) }}
+                  <span class="text-faint text-lg">kr</span>
+                </dd>
+              </div>
+              <div>
+                <dt class="eyebrow">{{ t('power.monthSaved') }}</dt>
+                <dd class="mt-2 font-display text-3xl font-medium text-pine">
+                  {{ formatKroner(monthly.saved * 100) }}
+                  <span class="text-faint text-lg">kr</span>
+                </dd>
+              </div>
+            </dl>
+
+            <p
+              v-if="monthly.unsupportedKwh > 0"
+              class="mt-6 border-l-2 border-clay py-1 pl-4 text-[0.9375rem] leading-relaxed text-muted"
+            >
+              {{
+                t('power.overCap', {
+                  cap: tariffs.supportCapKwhPerMonth,
+                  over: Math.round(monthly.unsupportedKwh),
+                })
+              }}
+            </p>
+
+            <p class="mt-4 font-mono text-[0.688rem] leading-relaxed text-faint">
+              {{ t('power.monthNote') }}
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Across the country ────────────────────────────────────────── -->
       <section class="border-b border-line py-10">
         <div class="mb-8 max-w-prose">
           <h2 class="font-display text-2xl font-medium text-ink">
@@ -459,7 +742,6 @@ const chartCaption = computed(() =>
             <p class="eyebrow mb-5">{{ t('power.mapHeading') }}</p>
             <NorwayMap :summaries="zoneSummaries" :selected="zone" @select="zone = $event" />
           </div>
-
           <div class="md:col-span-6 md:col-start-7">
             <ZoneCompare
               :summaries="zoneSummaries"
@@ -471,16 +753,14 @@ const chartCaption = computed(() =>
         </div>
       </section>
 
-      <!-- How it is built — the write-up lives under the working tool -->
+      <!-- ── How it is built ───────────────────────────────────────────── -->
       <section v-if="build" class="border-b border-line py-10">
         <div class="grid gap-10 md:grid-cols-12">
           <h2 class="font-display text-2xl font-medium text-ink md:col-span-4">
             {{ t('power.howBuilt') }}
           </h2>
-
           <div class="md:col-span-8">
             <p class="prose-column">{{ build.details }}</p>
-
             <ul class="mt-8">
               <li
                 v-for="(item, i) in build.challenges"
@@ -493,7 +773,6 @@ const chartCaption = computed(() =>
                 <span class="text-[0.9375rem] leading-relaxed text-muted">{{ item }}</span>
               </li>
             </ul>
-
             <a
               v-if="build.githubUrl"
               :href="build.githubUrl"
@@ -507,7 +786,7 @@ const chartCaption = computed(() =>
         </div>
       </section>
 
-      <!-- Source -->
+      <!-- ── Sources ───────────────────────────────────────────────────── -->
       <footer class="py-10">
         <p class="max-w-prose font-mono text-[0.688rem] leading-relaxed text-faint">
           {{ t('power.sourcePrefix') }}
@@ -520,6 +799,20 @@ const chartCaption = computed(() =>
             Hva koster strømmen.no
           </a>
           — {{ t('power.sourceNote') }}
+        </p>
+        <p class="mt-3 max-w-prose font-mono text-[0.688rem] leading-relaxed text-faint">
+          {{ t('power.ratesFrom', { year: tariffs.year }) }}
+          <a
+            v-for="(source, i) in tariffs.sources"
+            :key="source"
+            :href="source"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="link-quiet underline"
+          >
+            {{ i === 0 ? 'regjeringen.no' : i === 1 ? 'NVE' : 'hvakosterstrommen.no'
+            }}<span v-if="i < tariffs.sources.length - 1">, </span>
+          </a>
         </p>
       </footer>
     </template>

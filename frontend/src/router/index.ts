@@ -105,6 +105,26 @@ const routes: RouteRecordRaw[] = [
     },
   },
   {
+    path: '/projects/lanekassen',
+    name: 'project-lanekassen',
+    component: () => import('../views/projects/ProjectLoan.vue'),
+    meta: {
+      title: 'Lånekasse-kalkulator — Oleander Tengesdal',
+      description:
+        'Regn ut hvor mye av studielånet som blir stipend, hva det koster å bo hjemme, og hva som står igjen som gjeld.',
+    },
+  },
+  {
+    path: '/projects/eksamen',
+    name: 'project-eksamen',
+    component: () => import('../views/projects/ProjectExam.vue'),
+    meta: {
+      title: 'Eksamensplanlegger — Oleander Tengesdal',
+      description:
+        'Dagsplan for eksamenslesing vektet etter studiepoeng og dager igjen, med lesetimer og pauser.',
+    },
+  },
+  {
     path: '/projects/:id',
     name: 'project-details',
     component: () => import('../views/projects/ProjectShowcase.vue'),

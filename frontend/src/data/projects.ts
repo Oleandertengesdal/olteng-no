@@ -164,8 +164,8 @@ export const projects: Project[] = [
       nb: 'Strømpris i Norge',
     },
     description: {
-      en: 'Hourly spot prices for all five Norwegian price areas, with a chart and a comparison against the national average. Runs entirely in the browser against an open API — no backend, no key, no chart library.',
-      nb: 'Spotpris time for time i alle fem norske prisområder, med graf og sammenligning mot landssnittet. Kjører helt i nettleseren mot et åpent API — ingen backend, ingen nøkkel, ingen grafpakke.',
+      en: 'What you actually pay for electricity, hour by hour — spot price, government support, grid rent, electricity tax and VAT in one figure, in øre. Compares the spot scheme against the fixed Norgespris rate and computes the break-even between them. Runs entirely in the browser against an open API — no backend, no key, no chart library.',
+      nb: 'Hva du faktisk betaler for strømmen, time for time — spotpris, strømstøtte, nettleie, elavgift og mva samlet i ett tall, i øre. Sammenligner spot mot Norgespris og regner ut vippepunktet mellom dem. Kjører helt i nettleseren mot et åpent API — ingen backend, ingen nøkkel, ingen grafpakke.',
     },
     type: 'live',
     size: 'medium',
@@ -219,6 +219,74 @@ export const projects: Project[] = [
     },
   },
 
+  {
+    id: 'eksamen',
+    title: { en: 'Exam planner', nb: 'Eksamensplanlegger' },
+    description: {
+      en: 'A daily study plan weighted by credits and by how close each exam is, with a drift-free study timer built in. The plan shifts its own centre of gravity as an exam approaches, so you never have to replan.',
+      nb: 'Dagsplan for eksamenslesing vektet etter studiepoeng og hvor nær hver eksamen er, med en lesetimer innebygd. Planen flytter tyngdepunktet sitt selv etter hvert som en eksamen nærmer seg, så du slipper å planlegge om.',
+    },
+    type: 'live',
+    size: 'medium',
+    technologies: ['TypeScript', 'Vue 3', 'SVG'],
+    githubUrl: 'https://github.com/Oleandertengesdal/olteng-no',
+    component: 'ProjectExam',
+    featured: false,
+    hue: 'clay',
+    details: { year: '2026', role: 'Solo', status: 'Live' },
+    showcase: {
+      technicalDetails: {
+        en: 'Two pieces of engineering carry this one. The allocation weights each course daily by credits divided by days until its exam, then hands out whole blocks and distributes the remainders to whoever lost most to rounding — the same largest-remainder method used to allocate parliamentary seats from vote counts. The timer never counts down: it stores the timestamp the phase ends and derives the remaining time from the clock on every repaint.',
+        nb: 'To tekniske grep bærer dette prosjektet. Fordelingen vekter hvert emne daglig etter studiepoeng delt på dager igjen til eksamen, deler så ut hele bolker og gir restene til dem som tapte mest på avrundingen — samme største-rest-metode som brukes når mandater fordeles etter stemmetall. Timeren teller aldri ned: den lagrer tidspunktet fasen er ferdig og utleder gjenstående tid fra klokka ved hver oppdatering.',
+      },
+      challenges: {
+        en: [
+          'A setInterval that subtracts a second at a time accumulates drift over a 45 minute block, and browsers throttle or freeze timers in background tabs — which is exactly where a study timer lives while you study',
+          'Storing the end timestamp instead means the answer is correct no matter how few times the clock actually got to run, and it is right the instant you switch back to the tab',
+          'Blocks must be whole numbers: "1.4 blocks on maths" is not something a person can do',
+          'The alarm is generated with Web Audio rather than shipping an audio file, and the context is created on the first click because browsers require a gesture before playing sound',
+        ],
+        nb: [
+          'En setInterval som trekker fra ett sekund av gangen samler opp drift over en trekvarters bolk, og nettlesere struper eller fryser tidtakere i bakgrunnsfaner — som er nøyaktig der en lesetimer befinner seg mens du leser',
+          'Å lagre sluttidspunktet gjør at svaret blir riktig uansett hvor få ganger klokka faktisk fikk kjøre, og det stemmer i det sekundet du bytter tilbake til fanen',
+          'Bolker må være hele tall: «1,4 bolker på matte» er ikke noe et menneske kan gjøre',
+          'Alarmen lages med Web Audio i stedet for å laste ned en lydfil, og konteksten opprettes ved første trykk fordi nettlesere krever et brukertrykk før de spiller lyd',
+        ],
+      },
+    },
+  },
+  {
+    id: 'lanekassen',
+    title: { en: 'Student loan calculator', nb: 'Lånekasse-kalkulator' },
+    description: {
+      en: 'How much of the Norwegian student loan becomes a grant, what living at home costs you, and what is left as debt. Every rate sits in one block with its academic year and source, because the rates change annually and a calculator with stale figures is worse than none.',
+      nb: 'Hvor mye av studielånet som blir stipend, hva det koster å bo hjemme, og hva som står igjen som gjeld. Hver eneste sats står i én blokk med studieår og kilde, fordi satsene endres årlig og en kalkulator med utdaterte tall er verre enn ingen.',
+    },
+    type: 'live',
+    size: 'small',
+    technologies: ['TypeScript', 'Vue 3'],
+    githubUrl: 'https://github.com/Oleandertengesdal/olteng-no',
+    component: 'ProjectLoan',
+    featured: false,
+    hue: 'ochre',
+    details: { year: '2026', role: 'Solo', status: 'Live' },
+    showcase: {
+      challenges: {
+        en: [
+          'The rates change every academic year, so they live in one array with the year and a source link attached — it is deliberately impossible to edit a figure without seeing which year it belongs to',
+          'Credit conversion is proportional while degree conversion is all or nothing, and the two are easy to conflate',
+          'The income deduction can never exceed the grant: you do not owe Lånekassen money for having had a summer job',
+          'The tool states which academic year it is calculating for and links to the source, because being confidently out of date is the failure mode that matters here',
+        ],
+        nb: [
+          'Satsene endres hvert studieår, så de bor i én liste med årstall og kildelenke festet til seg — det er bevisst umulig å endre et tall uten å se hvilket år det gjelder',
+          'Studiepoengomgjøringen er forholdsmessig mens gradsomgjøringen er alt eller ingenting, og de to er lette å blande sammen',
+          'Inntektstrekket kan aldri overstige stipendet: man skylder ikke Lånekassen penger for å ha hatt sommerjobb',
+          'Verktøyet sier hvilket studieår det regner for og lenker til kilden, fordi det å være selvsikkert utdatert er den feilen som betyr noe her',
+        ],
+      },
+    },
+  },
   {
     id: 'karakter',
     title: {
